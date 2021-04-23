@@ -11,19 +11,27 @@ namespace Threax.ProcessHelper.Pwsh
         private const String EnvPrefix = "THREAX_";
 
         private readonly IProcessRunnerFactory<PowershellCoreRunner<T>> processRunnerFactory;
-        private readonly IObjectPropertyFinder<T> objectPropertyFinder;
+        private readonly IObjectPropertyFinder<PowershellCoreRunner<T>> objectPropertyFinder;
 
-        public PowershellCoreRunner(IProcessRunnerFactory<PowershellCoreRunner<T>> processRunnerFactory, IObjectPropertyFinder<T> objectPropertyFinder)
+        public PowershellCoreRunner(IProcessRunnerFactory<PowershellCoreRunner<T>> processRunnerFactory, IObjectPropertyFinder<PowershellCoreRunner<T>> objectPropertyFinder)
         {
             this.processRunnerFactory = processRunnerFactory;
             this.objectPropertyFinder = objectPropertyFinder;
         }
 
-        public TResult? RunCommand<TResult>(String command, Object? args = null)
+        public TResult? RunCommand<TResult>(String command, Object? args = null, int maxDepth = 10)
         {
+            return RunCommand<TResult>(command, args, maxDepth, out var exitCode);
+        }
+
+        public TResult? RunCommand<TResult>(String command, Object? args, int maxDepth, out int exitCode)
+        {
+            var jsonRunner = new JsonOutputProcessRunner(processRunnerFactory.Create());
+            jsonRunner.StartWithSkipLines.Add("WARNING: Resulting JSON is truncated as serialization has exceeded the set depth of");
+
             var commandArgs = GetPwshArguments(args);
 
-            var startInfo = new ProcessStartInfo("pwsh", $"-c '{command}{commandArgs}'");
+            var startInfo = new ProcessStartInfo("pwsh", $"-c $result = {command}{commandArgs}; '{jsonRunner.JsonStart}'; $result | ConvertTo-Json -Depth {maxDepth}; '{jsonRunner.JsonEnd}';");
             if (args != null)
             {
                 foreach (var property in objectPropertyFinder.GetObjectProperties(args))
@@ -31,9 +39,8 @@ namespace Threax.ProcessHelper.Pwsh
                     startInfo.Environment[$"{EnvPrefix}{property.Key}"] = property.Value;
                 }
             }
-            var jsonRunner = new JsonOutputProcessRunner(processRunnerFactory.Create());
 
-            jsonRunner.Run(startInfo);
+            exitCode = jsonRunner.Run(startInfo);
 
             return jsonRunner.GetResult<TResult>();
         }

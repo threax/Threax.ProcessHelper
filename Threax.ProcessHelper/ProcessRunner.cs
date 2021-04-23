@@ -11,28 +11,26 @@ namespace Threax.ProcessHelper
         {
             startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardOutput = true;
-            using (var process = Process.Start(startInfo))
+            using var process = Process.Start(startInfo);
+            if (events != null)
             {
-                if (events != null)
+                process.ErrorDataReceived += (s, e) =>
                 {
-                    process.ErrorDataReceived += (s, e) =>
-                    {
-                        events.ErrorDataReceived?.Invoke(s, e);
-                    };
-                    process.OutputDataReceived += (s, e) =>
-                    {
-                        events.OutputDataReceived?.Invoke(s, e);
-                    };
-                }
-                process.BeginErrorReadLine();
-                process.BeginOutputReadLine();
-
-                events?.ProcessCreated?.Invoke(process);
-
-                process.WaitForExit();
-
-                return process.ExitCode;
+                    events.ErrorDataReceived?.Invoke(s, e);
+                };
+                process.OutputDataReceived += (s, e) =>
+                {
+                    events.OutputDataReceived?.Invoke(s, e);
+                };
             }
+            process.BeginErrorReadLine();
+            process.BeginOutputReadLine();
+
+            events?.ProcessCreated?.Invoke(process);
+
+            process.WaitForExit();
+
+            return process.ExitCode;
         }
     }
 }

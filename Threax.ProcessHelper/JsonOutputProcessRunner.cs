@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 namespace Threax.ProcessHelper
@@ -13,6 +14,11 @@ namespace Threax.ProcessHelper
 
         public String JsonStart { get; set; } = DefaultJsonStart;
         public String JsonEnd { get; set; } = DefaultJsonEnd;
+
+        /// <summary>
+        /// Skip any lines that start with the given text when reading json output.
+        /// </summary>
+        public List<String> StartWithSkipLines { get; } = new List<string>();
 
         private readonly IProcessRunner child;
         private readonly StringBuilder jsonBuilder = new StringBuilder();
@@ -48,8 +54,12 @@ namespace Threax.ProcessHelper
                         }
                         else if (readJsonLines) //Else is intentional, want to skip start and end lines.
                         {
-                            HadJsonOutput = true;
-                            jsonBuilder.AppendLine(e.Data);
+                            //Skip any lines that start with text in the skip lines collection
+                            if(!StartWithSkipLines.Any(i => e.Data.StartsWith(i)))
+                            {
+                                HadJsonOutput = true;
+                                jsonBuilder.AppendLine(e.Data);
+                            }
                         }
                     }
 
