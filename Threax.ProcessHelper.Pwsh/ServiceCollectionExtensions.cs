@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 
 namespace Threax.ProcessHelper.Pwsh
@@ -18,7 +19,7 @@ namespace Threax.ProcessHelper.Pwsh
                 }
             });
 
-            services.AddScoped<IPowershellCoreRunner<T>, PowershellCoreRunner<T>>();
+            services.TryAddScoped<IPowershellCoreRunner<T>, PowershellCoreRunner<T>>();
 
             return services;
         }

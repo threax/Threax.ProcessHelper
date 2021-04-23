@@ -20,8 +20,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 ? new CustomProcessRunnerFactory<T>(() => options.SetupRunner(new ProcessRunner())) 
                 : new ProcessRunnerFactory<T>();
 
-            services.AddSingleton<IProcessRunnerFactory<T>>(factory);
-            services.AddSingleton<IObjectPropertyFinder<T>, ObjectPropertyFinder<T>>();
+            services.TryAddSingleton<IProcessRunnerFactory<T>>(factory);
+            services.TryAddSingleton<IObjectPropertyFinder<T>, ObjectPropertyFinder<T>>();
 
             return services;
         }
