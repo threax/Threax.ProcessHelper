@@ -1,17 +1,20 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
 namespace Threax.ProcessHelper
 {
-    public class ConsoleOutputProcessRunner : IProcessRunner
+    public class LoggingProcessRunner<T> : IProcessRunner
     {
         private readonly IProcessRunner child;
+        private readonly ILogger<LoggingProcessRunner<T>> logger;
 
-        public ConsoleOutputProcessRunner(IProcessRunner child)
+        public LoggingProcessRunner(IProcessRunner child, ILogger<LoggingProcessRunner<T>> logger)
         {
             this.child = child;
+            this.logger = logger;
         }
 
         public int Run(ProcessStartInfo startInfo, ProcessEvents? events = null)
@@ -23,7 +26,7 @@ namespace Threax.ProcessHelper
                 {
                     if (!String.IsNullOrEmpty(e.Data))
                     {
-                        Console.Error.WriteLine(e.Data);
+                        logger.LogWarning(e.Data);
                     }
 
                     events?.ErrorDataReceived?.Invoke(s, e);
@@ -32,7 +35,7 @@ namespace Threax.ProcessHelper
                 {
                     if (!String.IsNullOrEmpty(e.Data))
                     {
-                        Console.WriteLine(e.Data);
+                        logger.LogInformation(e.Data);
                     }
 
                     events?.OutputDataReceived?.Invoke(s, e);

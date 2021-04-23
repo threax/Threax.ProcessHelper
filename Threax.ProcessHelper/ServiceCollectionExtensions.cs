@@ -16,11 +16,12 @@ namespace Microsoft.Extensions.DependencyInjection
             var options = new ThreaxProcessHelperOptions<T>();
             configure?.Invoke(options);
 
-            IProcessRunnerFactory<T> factory = options.SetupRunner != null 
-                ? new CustomProcessRunnerFactory<T>(() => options.SetupRunner(new ProcessRunner())) 
-                : new ProcessRunnerFactory<T>();
+            services.TryAddSingleton<IProcessRunnerFactory<T>>(s =>
+                options.SetupRunner != null
+                ? new CustomProcessRunnerFactory<T>(() => options.SetupRunner(new ProcessRunner(), s))
+                : new ProcessRunnerFactory<T>()
+            );
 
-            services.TryAddSingleton<IProcessRunnerFactory<T>>(factory);
             services.TryAddSingleton<IObjectPropertyFinder<T>, ObjectPropertyFinder<T>>();
 
             return services;

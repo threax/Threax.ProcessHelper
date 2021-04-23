@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Threax.ProcessHelper.Pwsh
@@ -15,7 +16,7 @@ namespace Threax.ProcessHelper.Pwsh
             {
                 if (options.IncludeLogOutput)
                 {
-                    o.SetupRunner = r => new ConsoleOutputProcessRunner(r);
+                    o.SetupRunner = (r, s) => new LoggingProcessRunner<T>(r, s.GetRequiredService<ILogger<LoggingProcessRunner<T>>>());
                 }
             });
 
