@@ -19,6 +19,42 @@ namespace Threax.ProcessHelper.Pwsh
             this.pwshArgumentBuilder = pwshArgumentBuilder;
         }
 
+        public int RunProcess(String command, Object? args = null)
+        {
+            var runner = new ExitCodeReaderProcessRunner(processRunnerFactory.Create());
+
+            var argString = pwshArgumentBuilder.GetPwshArguments(args);
+            var finalCommand = $"{command}{argString}; $LASTEXITCODE";
+            var startInfo = SetupArgs(finalCommand, args);
+
+            runner.Run(startInfo);
+            
+            return runner.LastExitCode;
+        }
+
+        public TResult? RunProcess<TResult>(String command, Object? args)
+        {
+            return RunProcess<TResult>(command, args, out _);
+        }
+
+        public TResult? RunProcess<TResult>(String command, Object? args, out int exitCode)
+        {
+            var jsonRunner = new JsonOutputProcessRunner(processRunnerFactory.Create());
+            var runner = new ExitCodeReaderProcessRunner(jsonRunner);
+
+            var argString = pwshArgumentBuilder.GetPwshArguments(args);
+            var jsonStart = EscapePwshSingleQuote(jsonRunner.JsonStart);
+            var jsonEnd = EscapePwshSingleQuote(jsonRunner.JsonEnd);
+            var finalCommand = $"'{jsonStart}'; {command}{argString}; '{jsonEnd}'; $LASTEXITCODE";
+
+            var startInfo = SetupArgs(finalCommand, args);
+
+            runner.Run(startInfo);
+
+            exitCode = runner.LastExitCode;
+            return jsonRunner.GetResult<TResult>();
+        }
+
         public int RunCommand(IPwshCommandBuilder command, Object? args = null)
         {
             var runner = processRunnerFactory.Create();
@@ -29,7 +65,7 @@ namespace Threax.ProcessHelper.Pwsh
 
         public TResult? RunCommand<TResult>(IPwshCommandBuilder command, Object? args = null, int maxDepth = 10)
         {
-            return RunCommand<TResult>(command, args, maxDepth, out var exitCode);
+            return RunCommand<TResult>(command, args, maxDepth, out _);
         }
 
         public TResult? RunCommand<TResult>(IPwshCommandBuilder command, Object? args, int maxDepth, out int exitCode)

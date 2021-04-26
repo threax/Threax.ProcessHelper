@@ -55,5 +55,21 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             commandBuilder.AddResultCommand("'Hi'", new { Value = 1 });
             Assert.Throws<InvalidOperationException>(() => commandBuilder.AddResultCommand("'Hi'", new { Value = 1 }));
         }
+
+        [Fact]
+        public void PingProcess()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var result = runner.RunProcess("ping threax.com");
+            Assert.Equal(0, result);
+        }
+
+        [Fact]
+        public void PingProcessArgs()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var result = runner.RunProcess("ping threax.com", new { n = 5 });
+            Assert.Equal(0, result);
+        }
     }
 }

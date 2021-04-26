@@ -12,12 +12,13 @@ namespace Threax.ProcessHelper
         {
             var argType = args.GetType();
             var callArgs = new object[0];
-            foreach (var getMethod in argType.GetProperties().Select(i => i.GetMethod))
+            foreach (var property in argType.GetProperties())
             {
+                var getMethod = property.GetMethod;
                 if (getMethod != null)
                 {
                     var value = getMethod.Invoke(args, callArgs)?.ToString();
-                    yield return new KeyValuePair<string, string?>(getMethod.Name, value);
+                    yield return new KeyValuePair<string, string?>(property.Name, value);
                 }
             }
         }
