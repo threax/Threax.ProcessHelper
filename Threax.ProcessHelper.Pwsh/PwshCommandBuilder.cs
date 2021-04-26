@@ -8,6 +8,7 @@ namespace Threax.ProcessHelper.Pwsh
     {
         private readonly IPwshArgumentBuilder argumentBuilder;
         private readonly List<String> commands = new List<string>();
+        private bool resultLineAdded = false;
 
         public PwshCommandBuilder(IPwshArgumentBuilder argumentBuilder)
         {
@@ -31,6 +32,12 @@ namespace Threax.ProcessHelper.Pwsh
 
         public void AddResultCommand(String command, Object? args)
         {
+            if (resultLineAdded)
+            {
+                throw new InvalidOperationException("Can only add 1 result line per command.");
+            }
+
+            resultLineAdded = true;
             AddCommand($"$threax_result = {command}", args);
         }
 

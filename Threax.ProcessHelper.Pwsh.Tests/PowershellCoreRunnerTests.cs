@@ -37,5 +37,23 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             var result = runner.RunCommand<HostInfo>(commandBuilder, maxDepth: 2);
             Assert.Equal("ConsoleHost", result.Name);
         }
+
+        [Fact]
+        public void FailMultipleResults()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var commandBuilder = mockup.Get<IPwshCommandBuilder>();
+            commandBuilder.AddResultCommand("'Hi'");
+            Assert.Throws<InvalidOperationException>(() => commandBuilder.AddResultCommand("'Hi'"));
+        }
+
+        [Fact]
+        public void FailMultipleResultsArgs()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var commandBuilder = mockup.Get<IPwshCommandBuilder>();
+            commandBuilder.AddResultCommand("'Hi'", new { Value = 1 });
+            Assert.Throws<InvalidOperationException>(() => commandBuilder.AddResultCommand("'Hi'", new { Value = 1 }));
+        }
     }
 }
