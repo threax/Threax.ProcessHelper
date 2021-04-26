@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Threax.ProcessHelper.Pwsh
 {
-    class PwshArgumentBuilder : IPwshArgumentBuilder
+    class PwshArgumentBuilder<T> : IPwshArgumentBuilder<T>
     {
         private const String EnvPrefix = "THREAX_";
         private readonly IObjectPropertyFinder objectPropertyFinder;
@@ -24,7 +24,7 @@ namespace Threax.ProcessHelper.Pwsh
             var sb = new StringBuilder();
             foreach (var prop in objectPropertyFinder.GetObjectProperties(args))
             {
-                sb.Append($" -{prop.Key} $env:{GetEnvVarName(prop.Key)}");
+                sb.Append($" {ArgumentCallStyle}{prop.Key} $env:{GetEnvVarName(prop.Key)}");
             }
 
             return sb.ToString();
@@ -34,5 +34,7 @@ namespace Threax.ProcessHelper.Pwsh
         {
             return EnvPrefix + name;
         }
+
+        public String ArgumentCallStyle { get; set; } = "-";
     }
 }
