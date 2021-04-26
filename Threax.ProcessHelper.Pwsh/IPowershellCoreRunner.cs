@@ -1,11 +1,9 @@
-﻿using System;
-
-namespace Threax.ProcessHelper.Pwsh
+﻿namespace Threax.ProcessHelper.Pwsh
 {
     public interface IPowershellCoreRunner<T>
     {
-        public TResult? RunCommand<TResult>(String command, Object? args = null, int maxDepth = 100);
-
-        public TResult? RunCommand<TResult>(String command, Object? args, int maxDepth, out int exitCode);
+        int RunCommand(IPwshCommandBuilder command, object? args = null);
+        TResult? RunCommand<TResult>(IPwshCommandBuilder command, object? args = null, int maxDepth = 10);
+        TResult? RunCommand<TResult>(IPwshCommandBuilder command, object? args, int maxDepth, out int exitCode);
     }
 }

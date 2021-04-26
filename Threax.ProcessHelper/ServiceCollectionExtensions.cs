@@ -7,8 +7,6 @@ using Threax.ProcessHelper;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    class DefaultInstanceType { }
-
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddThreaxProcessHelper<T>(this IServiceCollection services, Action<ThreaxProcessHelperOptions<T>>? configure = null)
@@ -22,7 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 : new ProcessRunnerFactory<T>()
             );
 
-            services.TryAddSingleton<IObjectPropertyFinder<T>, ObjectPropertyFinder<T>>();
+            services.TryAddSingleton<IObjectPropertyFinder, ObjectPropertyFinder>();
 
             return services;
         }

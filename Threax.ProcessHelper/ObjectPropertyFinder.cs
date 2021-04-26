@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Threax.ProcessHelper
 {
-    public class ObjectPropertyFinder<T> : IObjectPropertyFinder<T>
+    public class ObjectPropertyFinder : IObjectPropertyFinder
     {
         public IEnumerable<KeyValuePair<string, string?>> GetObjectProperties(Object args)
         {

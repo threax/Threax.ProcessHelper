@@ -33,7 +33,7 @@ namespace Threax.ProcessHelper
             jsonBuilder.Clear();
             HadJsonOutput = false;
             bool readJsonLines = false;
-            return child.Run(startInfo, new ProcessEvents()
+            LastExitCode = child.Run(startInfo, new ProcessEvents()
             {
                 ProcessCreated = events?.ProcessCreated,
                 ErrorDataReceived = (s, e) =>
@@ -66,6 +66,8 @@ namespace Threax.ProcessHelper
                     events?.OutputDataReceived?.Invoke(s, e);
                 }
             });
+
+            return LastExitCode;
         }
 
         /// <summary>
@@ -96,5 +98,10 @@ namespace Threax.ProcessHelper
         /// This will be true if there was any json output.
         /// </summary>
         public bool HadJsonOutput { get; private set; }
+
+        /// <summary>
+        /// The last exit code produced by this runner.
+        /// </summary>
+        public int LastExitCode { get; set; }
     }
 }
