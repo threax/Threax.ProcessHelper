@@ -9,6 +9,6 @@ namespace Threax.ProcessHelper.Pwsh
         JToken RunProcess(IPwshCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.");
         TResult? RunProcess<TResult>(FormattableString command, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.");
         TResult? RunProcess<TResult>(IPwshCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.");
-        int RunProcessVoid(FormattableString command);
+        void RunProcessVoid(FormattableString command, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.");
     }
 }

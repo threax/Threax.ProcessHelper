@@ -20,8 +20,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 : new ProcessRunnerFactory<T>()
             );
 
-            services.TryAddSingleton<IObjectPropertyFinder, ObjectPropertyFinder>();
-
             return services;
         }
     }

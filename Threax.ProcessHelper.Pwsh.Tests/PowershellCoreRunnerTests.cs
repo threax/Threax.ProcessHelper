@@ -153,16 +153,14 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         {
             var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
             var numTimes = 5;
-            var result = runner.RunProcessVoid($"ping threax.com -n {numTimes}");
-            Assert.Equal(0, result);
+            runner.RunProcessVoid($"ping threax.com -n {numTimes}");
         }
 
         [Fact]
         public void RunProcessVoidFail()
         {
             var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
-            var exitCode = runner.RunProcessVoid($"ping");
-            Assert.Equal(1, exitCode);
+            Assert.Throws<InvalidOperationException>(() => runner.RunProcessVoid($"ping"));
         }
 
         [Fact]
