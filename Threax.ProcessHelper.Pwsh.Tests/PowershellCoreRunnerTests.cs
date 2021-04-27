@@ -14,6 +14,29 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         }
 
         [Fact]
+        public void RunProcessCommandsVoidSecurityCheck()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var builder = mockup.Get<IPwshCommandBuilder>();
+            var evil = "exit 44;";
+            builder.AddCommand($"'Before'");
+            builder.AddResultCommand($"{evil}");
+            builder.AddCommand($"'After'");
+            runner.RunProcessVoid(builder);
+        }
+
+        [Fact]
+        public void RunProcessCommandsVoid()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var builder = mockup.Get<IPwshCommandBuilder>();
+            builder.AddCommand($"'Before'");
+            builder.AddResultCommand($"'Hi'");
+            builder.AddCommand($"'After'");
+            runner.RunProcessVoid(builder);
+        }
+
+        [Fact]
         public void RunProcessCommandsJTokenSecurityCheck()
         {
             var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();

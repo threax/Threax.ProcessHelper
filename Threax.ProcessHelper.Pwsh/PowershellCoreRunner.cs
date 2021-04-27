@@ -52,6 +52,19 @@ namespace Threax.ProcessHelper.Pwsh
             return runner.GetResult();
         }
 
+        public void RunProcessVoid(IPwshCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        {
+            var runner = processRunnerFactory.Create();
+
+            var escapedCommand = builder.BuildOneLineCommand(out var args);
+            var startInfo = SetupArgs(escapedCommand, args);
+            var exitCode = runner.Run(startInfo);
+            if (exitCode != validExitCode)
+            {
+                throw new InvalidOperationException($"Invalid exit code '{exitCode}' expected '{validExitCode}'. Message: '{invalidExitCodeMessage}'");
+            }
+        }
+
         public TResult? RunProcess<TResult>(IPwshCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
         {
             var result = RunProcess(builder, validExitCode, invalidExitCodeMessage);
