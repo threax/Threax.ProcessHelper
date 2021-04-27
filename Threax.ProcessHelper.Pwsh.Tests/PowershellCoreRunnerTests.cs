@@ -57,19 +57,43 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         }
 
         [Fact]
-        public void PingProcess()
+        public void RunProcess()
         {
             var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
-            var result = runner.RunProcess("ping threax.com");
+            var result = runner.RunProcessVoid("ping threax.com");
             Assert.Equal(0, result);
         }
 
         [Fact]
-        public void PingProcessArgs()
+        public void RunProcessArgs()
         {
             var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
-            var result = runner.RunProcess("ping threax.com", new { n = 5 });
+            var result = runner.RunProcessVoid("ping threax.com", new { n = 5 });
             Assert.Equal(0, result);
+        }
+
+        [Fact]
+        public void RunProcessJToken()
+        {
+
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            dynamic result = runner.RunProcess("[PSCustomObject]@{ Name = 'Test'; Value = 'SomeValue'; } | ConvertTo-Json; $LASTEXITCODE=0");
+            Assert.Equal("Test", (string?)result.Name);
+        }
+
+        class TestObj
+        {
+            public String Name { get; set; }
+
+            public String Value { get; set; }
+        }
+
+        [Fact]
+        public void RunProcessObject()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            dynamic result = runner.RunProcess<TestObj>("[PSCustomObject]@{ Name = 'Test'; Value = 'SomeValue'; } | ConvertTo-Json; $LASTEXITCODE=0");
+            Assert.Equal("Test", result.Name);
         }
     }
 }

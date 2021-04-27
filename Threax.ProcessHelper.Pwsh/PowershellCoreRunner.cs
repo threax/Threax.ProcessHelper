@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace Threax.ProcessHelper.Pwsh
             this.pwshArgumentBuilder = pwshArgumentBuilder;
         }
 
-        public int RunProcess(String command, Object? args = null)
+        public int RunProcessVoid(String command, Object? args = null)
         {
             var runner = new ExitCodeReaderProcessRunner(processRunnerFactory.Create());
 
@@ -28,16 +29,27 @@ namespace Threax.ProcessHelper.Pwsh
             var startInfo = SetupArgs(finalCommand, args);
 
             runner.Run(startInfo);
-            
+
             return runner.LastExitCode;
         }
 
-        public TResult? RunProcess<TResult>(String command, Object? args)
+        public TResult? RunProcess<TResult>(String command, Object? args = null)
         {
             return RunProcess<TResult>(command, args, out _);
         }
 
         public TResult? RunProcess<TResult>(String command, Object? args, out int exitCode)
+        {
+            var result = RunProcess(command, args, out exitCode);
+            return result.ToObject<TResult>();
+        }
+
+        public JToken RunProcess(String command, Object? args = null)
+        {
+            return RunProcess(command, args, out _);
+        }
+
+        public JToken RunProcess(String command, Object? args, out int exitCode)
         {
             var jsonRunner = new JsonOutputProcessRunner(processRunnerFactory.Create());
             var runner = new ExitCodeReaderProcessRunner(jsonRunner);
@@ -52,10 +64,10 @@ namespace Threax.ProcessHelper.Pwsh
             runner.Run(startInfo);
 
             exitCode = runner.LastExitCode;
-            return jsonRunner.GetResult<TResult>();
+            return jsonRunner.GetResult();
         }
 
-        public int RunCommand(IPwshCommandBuilder command, Object? args = null)
+        public int RunCommandVoid(IPwshCommandBuilder command, Object? args = null)
         {
             var runner = processRunnerFactory.Create();
             var finalCommand = command.BuildOneLineCommand();
@@ -70,6 +82,17 @@ namespace Threax.ProcessHelper.Pwsh
 
         public TResult? RunCommand<TResult>(IPwshCommandBuilder command, Object? args, int maxDepth, out int exitCode)
         {
+            var result = RunCommand(command, args, maxDepth, out exitCode);
+            return result.ToObject<TResult>();
+        }
+
+        public JToken RunCommand(IPwshCommandBuilder command, Object? args = null, int maxDepth = 10)
+        {
+            return RunCommand(command, args, maxDepth, out _);
+        }
+
+        public JToken RunCommand(IPwshCommandBuilder command, Object? args, int maxDepth, out int exitCode)
+        {
             var jsonRunner = new JsonOutputProcessRunner(processRunnerFactory.Create());
             jsonRunner.StartWithSkipLines.Add("WARNING: Resulting JSON is truncated as serialization has exceeded the set depth of");
 
@@ -83,7 +106,7 @@ namespace Threax.ProcessHelper.Pwsh
             jsonRunner.Run(startInfo);
 
             exitCode = jsonRunner.LastExitCode;
-            return jsonRunner.GetResult<TResult>();
+            return jsonRunner.GetResult();
         }
 
         private ProcessStartInfo SetupArgs(String finalCommand, object? args)
