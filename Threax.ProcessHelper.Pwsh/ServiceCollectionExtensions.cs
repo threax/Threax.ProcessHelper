@@ -2,8 +2,10 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
+using Threax.ProcessHelper;
+using Threax.ProcessHelper.Pwsh;
 
-namespace Threax.ProcessHelper.Pwsh
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {

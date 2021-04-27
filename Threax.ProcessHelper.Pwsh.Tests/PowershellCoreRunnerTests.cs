@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using Threax.AspNetCore.Tests;
 using Xunit;
