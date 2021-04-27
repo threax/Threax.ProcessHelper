@@ -7,8 +7,6 @@ namespace Threax.ProcessHelper.Pwsh
 {
     public static class ServiceCollectionExtensions
     {
-        class DefaultInstance { }
-
         public static IServiceCollection AddThreaxPwshProcessHelper<T>(this IServiceCollection services, Action<ThreaxPwshProcessHelperOptions<T>>? configure = null)
         {
             var options = new ThreaxPwshProcessHelperOptions<T>();
@@ -22,18 +20,7 @@ namespace Threax.ProcessHelper.Pwsh
                 }
             });
 
-            services.TryAddScoped<IPowershellCoreRunner<T>>(s =>
-            {
-                var processFactory = s.GetRequiredService<IProcessRunnerFactory<PowershellCoreRunner<T>>>();
-                var objectPropertyFinder = s.GetRequiredService<IObjectPropertyFinder>();
-                var argProvider = options.CreateArgumentBuilder(s);
-                return new PowershellCoreRunner<T>(processFactory, objectPropertyFinder, argProvider);
-            });
-
-            services.TryAddScoped(typeof(IPwshArgumentBuilder<>), typeof(PwshArgumentBuilder<>));
-            services.TryAddScoped<IPwshArgumentBuilder>(s => s.GetService<IPwshArgumentBuilder<DefaultInstance>>());
-
-            services.TryAddTransient<IPwshCommandBuilder, PwshCommandBuilder>();
+            services.TryAddScoped<IPowershellCoreRunner<T>, PowershellCoreRunner<T>>();
 
             return services;
         }

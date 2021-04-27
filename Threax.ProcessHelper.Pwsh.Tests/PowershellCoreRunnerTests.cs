@@ -17,9 +17,7 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         //public void Echo()
         //{
         //    var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
-        //    var commandBuilder = mockup.Get<IPwshCommandBuilder>();
-        //    commandBuilder.AddResultCommand("'Hi'");
-        //    var result = runner.RunCommand<string>(commandBuilder);
+        //    var result = runner.RunProcess<string>($"'Hi'");
         //    Assert.Equal("Hi", result);
         //}
 
@@ -32,9 +30,7 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         //public void GetHost()
         //{
         //    var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
-        //    var commandBuilder = mockup.Get<IPwshCommandBuilder>();
-        //    commandBuilder.AddResultCommand("Get-Host");
-        //    var result = runner.RunCommand<HostInfo>(commandBuilder, maxDepth: 2);
+        //    var result = runner.RunProcess<HostInfo>($"Get-Host", jsonDepth: 2);
         //    Assert.Equal("ConsoleHost", result.Name);
         //}
 
@@ -57,20 +53,20 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         //}
 
         [Fact]
-        public void RunProcess()
-        {
-            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
-            var result = runner.RunProcessVoid($"ping threax.com");
-            Assert.Equal(0, result);
-        }
-
-        [Fact]
-        public void RunProcessArgs()
+        public void RunProcessVoid()
         {
             var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
             var numTimes = 5;
             var result = runner.RunProcessVoid($"ping threax.com -n {numTimes}");
             Assert.Equal(0, result);
+        }
+
+        [Fact]
+        public void RunProcessVoidFail()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var exitCode = runner.RunProcessVoid($"ping");
+            Assert.Equal(1, exitCode);
         }
 
         [Fact]
@@ -80,8 +76,18 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
             var name = "Test";
             var value = "SomeValue";
-            dynamic result = runner.RunProcess($"[PSCustomObject]@{{ Name = {name}; Value = {value}; }} | ConvertTo-Json; $LASTEXITCODE=0");
+            dynamic result = runner.RunProcess($"[PSCustomObject]@{{ Name = {name}; Value = {value}; }} | ConvertTo-Json -Depth 2");
             Assert.Equal("Test", (string?)result.Name);
+        }
+
+        [Fact]
+        public void RunProcessJTokenFail()
+        {
+
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var name = "Test";
+            var value = "SomeValue";
+            Assert.Throws<InvalidOperationException>(() => runner.RunProcess($"[PSCustomObject]@{{ Name = {name}; Value = {value}; }} | ConvertTo-Json -Depth 2; throw;"));
         }
 
         class TestObj
@@ -97,8 +103,17 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
             var name = "Test";
             var value = "SomeValue";
-            var result = runner.RunProcess<TestObj>($"[PSCustomObject]@{{ Name = {name}; Value = {value}; }} | ConvertTo-Json; $LASTEXITCODE=0");
+            var result = runner.RunProcess<TestObj>($"[PSCustomObject]@{{ Name = {name}; Value = {value}; }} | ConvertTo-Json -Depth 2");
             Assert.Equal("Test", result.Name);
+        }
+
+        [Fact]
+        public void RunProcessObjectFail()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var name = "Test";
+            var value = "SomeValue";
+            Assert.Throws<InvalidOperationException>(() => runner.RunProcess<TestObj>($"[PSCustomObject]@{{ Name = {name}; Value = {value}; }} | ConvertTo-Json -Depth 2; throw;"));
         }
     }
 }

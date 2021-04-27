@@ -10,152 +10,50 @@ namespace Threax.ProcessHelper.Pwsh
     public class PowershellCoreRunner<T> : IPowershellCoreRunner<T>
     {
         private readonly IProcessRunnerFactory<PowershellCoreRunner<T>> processRunnerFactory;
-        private readonly IObjectPropertyFinder objectPropertyFinder;
-        private readonly IPwshArgumentBuilder pwshArgumentBuilder;
 
-        public PowershellCoreRunner(IProcessRunnerFactory<PowershellCoreRunner<T>> processRunnerFactory, IObjectPropertyFinder objectPropertyFinder, IPwshArgumentBuilder pwshArgumentBuilder)
+        public PowershellCoreRunner(IProcessRunnerFactory<PowershellCoreRunner<T>> processRunnerFactory)
         {
             this.processRunnerFactory = processRunnerFactory;
-            this.objectPropertyFinder = objectPropertyFinder;
-            this.pwshArgumentBuilder = pwshArgumentBuilder;
         }
 
         public int RunProcessVoid(FormattableString command)
         {
-            var runner = new ExitCodeReaderProcessRunner(processRunnerFactory.Create());
-
+            var runner = processRunnerFactory.Create();
             var escapedCommand = command.GetPwshEnvString(out var args);
-            var finalCommand = $"{escapedCommand}; $LASTEXITCODE";
+            var finalCommand = $"{escapedCommand};exit $LASTEXITCODE";
             var startInfo = SetupArgs(finalCommand, args);
-
-            runner.Run(startInfo);
-
-            return runner.LastExitCode;
+            var exitCode = runner.Run(startInfo);
+            return exitCode;
         }
 
-        public TResult? RunProcess<TResult>(FormattableString command)
+        public TResult? RunProcess<TResult>(FormattableString command, int validExitCode = 0, String invalidExitCodeMessage = "Invalid exit code for process.")
         {
-            return RunProcess<TResult>(command, out _);
-        }
-
-        public TResult? RunProcess<TResult>(FormattableString command, out int exitCode)
-        {
-            var result = RunProcess(command, out exitCode);
+            var result = RunProcess(command, validExitCode, invalidExitCodeMessage);
             return result.ToObject<TResult>();
         }
 
-        public JToken RunProcess(FormattableString command)
+        public JToken RunProcess(FormattableString command, int validExitCode = 0, String invalidExitCodeMessage = "Invalid exit code for process.")
         {
-            return RunProcess(command, out _);
+            DoRunProcess(command, validExitCode, invalidExitCodeMessage, out var runner);
+
+            return runner.GetResult();
         }
 
-        public JToken RunProcess(FormattableString command, out int exitCode)
+        private void DoRunProcess(FormattableString command, int validExitCode, String invalidExitCodeMessage, out JsonOutputProcessRunner runner)
         {
-            var jsonRunner = new JsonOutputProcessRunner(processRunnerFactory.Create());
-            var runner = new ExitCodeReaderProcessRunner(jsonRunner);
+            runner = new JsonOutputProcessRunner(processRunnerFactory.Create());
+            var jsonStart = EscapePwshSingleQuote(runner.JsonStart);
+            var jsonEnd = EscapePwshSingleQuote(runner.JsonEnd);
 
             var escapedCommand = command.GetPwshEnvString(out var args);
-
-            var jsonStart = EscapePwshSingleQuote(jsonRunner.JsonStart);
-            var jsonEnd = EscapePwshSingleQuote(jsonRunner.JsonEnd);
-            var finalCommand = $"'{jsonStart}'; {escapedCommand}; '{jsonEnd}'; $LASTEXITCODE";
-
+            var finalCommand = $"'{jsonStart}';{escapedCommand};'{jsonEnd}';exit $LASTEXITCODE";
             var startInfo = SetupArgs(finalCommand, args);
-
-            runner.Run(startInfo);
-
-            exitCode = runner.LastExitCode;
-            return jsonRunner.GetResult();
+            var exitCode = runner.Run(startInfo);
+            if (exitCode != validExitCode)
+            {
+                throw new InvalidOperationException($"Invalid exit code '{exitCode}' expected '{validExitCode}'. Message: '{invalidExitCodeMessage}'");
+            }
         }
-
-        //public int RunProcessVoid(String command, Object? args = null)
-        //{
-        //    var runner = new ExitCodeReaderProcessRunner(processRunnerFactory.Create());
-
-        //    var argString = pwshArgumentBuilder.GetPwshArguments(args);
-        //    var finalCommand = $"{command}{argString}; $LASTEXITCODE";
-        //    var startInfo = SetupArgs(finalCommand, args);
-
-        //    runner.Run(startInfo);
-
-        //    return runner.LastExitCode;
-        //}
-
-        //public TResult? RunProcess<TResult>(String command, Object? args = null)
-        //{
-        //    return RunProcess<TResult>(command, args, out _);
-        //}
-
-        //public TResult? RunProcess<TResult>(String command, Object? args, out int exitCode)
-        //{
-        //    var result = RunProcess(command, args, out exitCode);
-        //    return result.ToObject<TResult>();
-        //}
-
-        //public JToken RunProcess(String command, Object? args = null)
-        //{
-        //    return RunProcess(command, args, out _);
-        //}
-
-        //public JToken RunPipeline(String command, Object? args, out int exitCode)
-        //{
-        //    var jsonRunner = new JsonOutputProcessRunner(processRunnerFactory.Create());
-        //    var runner = new ExitCodeReaderProcessRunner(jsonRunner);
-
-        //    var argString = pwshArgumentBuilder.GetPwshArguments(args);
-        //    var jsonStart = EscapePwshSingleQuote(jsonRunner.JsonStart);
-        //    var jsonEnd = EscapePwshSingleQuote(jsonRunner.JsonEnd);
-        //    var finalCommand = $"'{jsonStart}'; {command}{argString}; '{jsonEnd}'; $LASTEXITCODE";
-
-        //    var startInfo = SetupArgs(finalCommand, args);
-
-        //    runner.Run(startInfo);
-
-        //    exitCode = runner.LastExitCode;
-        //    return jsonRunner.GetResult();
-        //}
-
-        //public int RunCommandVoid(IPwshCommandBuilder command, Object? args = null)
-        //{
-        //    var runner = processRunnerFactory.Create();
-        //    var finalCommand = command.BuildOneLineCommand();
-        //    var startInfo = SetupArgs(finalCommand, args);
-        //    return runner.Run(startInfo);
-        //}
-
-        //public TResult? RunCommand<TResult>(IPwshCommandBuilder command, Object? args = null, int maxDepth = 10)
-        //{
-        //    return RunCommand<TResult>(command, args, maxDepth, out _);
-        //}
-
-        //public TResult? RunCommand<TResult>(IPwshCommandBuilder command, Object? args, int maxDepth, out int exitCode)
-        //{
-        //    var result = RunCommand(command, args, maxDepth, out exitCode);
-        //    return result.ToObject<TResult>();
-        //}
-
-        //public JToken RunCommand(IPwshCommandBuilder command, Object? args = null, int maxDepth = 10)
-        //{
-        //    return RunCommand(command, args, maxDepth, out _);
-        //}
-
-        //public JToken RunCommand(IPwshCommandBuilder command, Object? args, int maxDepth, out int exitCode)
-        //{
-        //    var jsonRunner = new JsonOutputProcessRunner(processRunnerFactory.Create());
-        //    jsonRunner.StartWithSkipLines.Add("WARNING: Resulting JSON is truncated as serialization has exceeded the set depth of");
-
-        //    var finalCommand = command.BuildOneLineCommand();
-        //    var jsonStart = EscapePwshSingleQuote(jsonRunner.JsonStart);
-        //    var jsonEnd = EscapePwshSingleQuote(jsonRunner.JsonEnd);
-        //    finalCommand += $"; '{jsonStart}'; $threax_result | ConvertTo-Json -Depth {maxDepth}; '{jsonEnd}';";
-
-        //    var startInfo = SetupArgs(finalCommand, args);
-
-        //    jsonRunner.Run(startInfo);
-
-        //    exitCode = jsonRunner.LastExitCode;
-        //    return jsonRunner.GetResult();
-        //}
 
         private ProcessStartInfo SetupArgs(String finalCommand, IEnumerable<KeyValuePair<String, Object?>> args)
         {
