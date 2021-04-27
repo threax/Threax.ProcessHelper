@@ -14,6 +14,19 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         }
 
         [Fact]
+        public void RunProcessCommandsJTokenSecurityCheck()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var builder = mockup.Get<IPwshCommandBuilder>();
+            var evil = "echo hi";
+            builder.AddCommand($"'Before'");
+            builder.AddResultCommand($"{evil}");
+            builder.AddCommand($"'After'");
+            var result = runner.RunProcess(builder);
+            Assert.Equal("echo hi", result.ToString());
+        }
+
+        [Fact]
         public void RunProcessCommandsJToken()
         {
             var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
@@ -26,12 +39,85 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         }
 
         [Fact]
+        public void RunProcessCommandJTokenArgs()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var builder = mockup.Get<IPwshCommandBuilder>();
+            var info = "Hi";
+            builder.AddCommand($"'Before'");
+            builder.AddResultCommand($"{info}");
+            builder.AddCommand($"'After'");
+            var result = runner.RunProcess(builder);
+            Assert.Equal("Hi", result.ToString());
+        }
+
+        [Fact]
+        public void RunProcessCommandsObjectSecurityCheck()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var builder = mockup.Get<IPwshCommandBuilder>();
+            var evil = "echo hi";
+            builder.AddCommand($"'Before'");
+            builder.AddResultCommand($"{evil}");
+            builder.AddCommand($"'After'");
+            var result = runner.RunProcess<String>(builder);
+            Assert.Equal("echo hi", result);
+        }
+
+        [Fact]
         public void RunProcessCommandsObject()
         {
             var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
             var builder = mockup.Get<IPwshCommandBuilder>();
             builder.AddCommand($"'Before'");
             builder.AddResultCommand($"'Hi'");
+            builder.AddCommand($"'After'");
+            var result = runner.RunProcess<String>(builder);
+            Assert.Equal("Hi", result);
+        }
+
+        [Fact]
+        public void RunProcessCommandArgs()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var builder = mockup.Get<IPwshCommandBuilder>();
+            var info = "Hi";
+            builder.AddCommand($"'Before'");
+            builder.AddResultCommand($"{info}");
+            builder.AddCommand($"'After'");
+            var result = runner.RunProcess<String>(builder);
+            Assert.Equal("Hi", result);
+        }
+
+        [Fact]
+        public void RunProcessCommandMultiArgsBefore()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var builder = mockup.Get<IPwshCommandBuilder>();
+            var info = "Hi";
+            var dummy = "Dummy";
+            builder.AddCommand($"'Before'");
+            builder.AddCommand($"{dummy}");
+            builder.AddCommand($"{dummy}");
+            builder.AddCommand($"{dummy}");
+            builder.AddResultCommand($"{info}");
+            builder.AddCommand($"'After'");
+            var result = runner.RunProcess<String>(builder);
+            Assert.Equal("Hi", result);
+        }
+
+        [Fact]
+        public void RunProcessCommandMultiArgsAfter()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var builder = mockup.Get<IPwshCommandBuilder>();
+            var info = "Hi";
+            var dummy = "Dummy";
+            builder.AddCommand($"'Before'");
+            builder.AddResultCommand($"{info}");
+            builder.AddCommand($"{dummy}");
+            builder.AddCommand($"{dummy}");
+            builder.AddCommand($"{dummy}");
             builder.AddCommand($"'After'");
             var result = runner.RunProcess<String>(builder);
             Assert.Equal("Hi", result);
