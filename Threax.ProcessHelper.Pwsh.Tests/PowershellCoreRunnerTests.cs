@@ -18,7 +18,9 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         {
             var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
             var builder = mockup.Get<IPwshCommandBuilder>();
+            builder.AddCommand($"'Before'");
             builder.AddResultCommand($"'Hi'");
+            builder.AddCommand($"'After'");
             var result = runner.RunProcess(builder);
             Assert.Equal("Hi", result.ToString());
         }
@@ -28,7 +30,9 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         {
             var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
             var builder = mockup.Get<IPwshCommandBuilder>();
+            builder.AddCommand($"'Before'");
             builder.AddResultCommand($"'Hi'");
+            builder.AddCommand($"'After'");
             var result = runner.RunProcess<String>(builder);
             Assert.Equal("Hi", result);
         }
