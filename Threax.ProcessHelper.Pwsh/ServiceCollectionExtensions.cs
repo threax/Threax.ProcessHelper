@@ -21,6 +21,7 @@ namespace Threax.ProcessHelper.Pwsh
             });
 
             services.TryAddScoped<IPowershellCoreRunner<T>, PowershellCoreRunner<T>>();
+            services.TryAddTransient<IPwshCommandBuilder, PwshCommandBuilder>();
 
             return services;
         }

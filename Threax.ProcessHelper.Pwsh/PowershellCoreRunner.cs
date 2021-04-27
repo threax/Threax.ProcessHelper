@@ -34,14 +34,7 @@ namespace Threax.ProcessHelper.Pwsh
 
         public JToken RunProcess(FormattableString command, int validExitCode = 0, String invalidExitCodeMessage = "Invalid exit code for process.")
         {
-            DoRunProcess(command, validExitCode, invalidExitCodeMessage, out var runner);
-
-            return runner.GetResult();
-        }
-
-        private void DoRunProcess(FormattableString command, int validExitCode, String invalidExitCodeMessage, out JsonOutputProcessRunner runner)
-        {
-            runner = new JsonOutputProcessRunner(processRunnerFactory.Create());
+            var runner = new JsonOutputProcessRunner(processRunnerFactory.Create());
             var jsonStart = EscapePwshSingleQuote(runner.JsonStart);
             var jsonEnd = EscapePwshSingleQuote(runner.JsonEnd);
 
@@ -53,6 +46,30 @@ namespace Threax.ProcessHelper.Pwsh
             {
                 throw new InvalidOperationException($"Invalid exit code '{exitCode}' expected '{validExitCode}'. Message: '{invalidExitCodeMessage}'");
             }
+            return runner.GetResult();
+        }
+
+        public TResult? RunProcess<TResult>(IPwshCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        {
+            var result = RunProcess(builder, validExitCode, invalidExitCodeMessage);
+            return result.ToObject<TResult>();
+        }
+
+        public JToken RunProcess(IPwshCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        {
+            var runner = new JsonOutputProcessRunner(processRunnerFactory.Create());
+            var jsonStart = EscapePwshSingleQuote(runner.JsonStart);
+            var jsonEnd = EscapePwshSingleQuote(runner.JsonEnd);
+
+            var escapedCommand = builder.BuildOneLineCommand(out var args);
+            var finalCommand = $"{escapedCommand};${builder.ResultVariableName} = ${builder.ResultVariableName} | ConvertTo-Json -Depth {builder.JsonDepth};'{jsonStart}';${builder.ResultVariableName};'{jsonEnd}'";
+            var startInfo = SetupArgs(finalCommand, args);
+            var exitCode = runner.Run(startInfo);
+            if (exitCode != validExitCode)
+            {
+                throw new InvalidOperationException($"Invalid exit code '{exitCode}' expected '{validExitCode}'. Message: '{invalidExitCodeMessage}'");
+            }
+            return runner.GetResult();
         }
 
         private ProcessStartInfo SetupArgs(String finalCommand, IEnumerable<KeyValuePair<String, Object?>> args)
