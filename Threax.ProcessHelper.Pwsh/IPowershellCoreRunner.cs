@@ -1,16 +1,14 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
 
 namespace Threax.ProcessHelper.Pwsh
 {
     public interface IPowershellCoreRunner<T>
     {
-        int RunCommandVoid(IPwshCommandBuilder command, object? args = null);
-        TResult? RunCommand<TResult>(IPwshCommandBuilder command, object? args = null, int maxDepth = 10);
-        TResult? RunCommand<TResult>(IPwshCommandBuilder command, object? args, int maxDepth, out int exitCode);
-        int RunProcessVoid(string command, object? args = null);
-        TResult? RunProcess<TResult>(string command, object? args = null);
-        TResult? RunProcess<TResult>(string command, object? args, out int exitCode);
-        JToken RunProcess(string command, object? args = null);
-        JToken RunProcess(string command, object? args, out int exitCode);
+        JToken RunProcess(FormattableString command);
+        JToken RunProcess(FormattableString command, out int exitCode);
+        TResult? RunProcess<TResult>(FormattableString command);
+        TResult? RunProcess<TResult>(FormattableString command, out int exitCode);
+        int RunProcessVoid(FormattableString command);
     }
 }
