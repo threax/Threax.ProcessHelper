@@ -12,4 +12,9 @@ namespace Threax.ProcessHelper.Pwsh
         /// </summary>
         public bool IncludeLogOutput { get; set; }
     }
+
+    public class ThreaxPwshProcessHelperOptions : ThreaxPwshProcessHelperOptions<ThreaxPwshProcessHelperOptions>
+    {
+
+    }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Threax.ProcessHelper
 {
-    public interface IShellCommandBuilder
+    public interface IShellCommandBuilder<T>
     {
         /// <summary>
         /// The name to use for the result variable.
@@ -20,5 +20,10 @@ namespace Threax.ProcessHelper
         void AddResultCommand(FormattableString command);
         
         string CreateFinalEscapedCommand(out IEnumerable<KeyValuePair<string, object?>> args);
+    }
+
+    public interface IShellCommandBuilder : IShellCommandBuilder<IShellCommandBuilder>
+    {
+
     }
 }

@@ -9,6 +9,33 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
+        class DefaultPwshLog { }
+
+        public static IServiceCollection AddThreaxPwshProcessHelper(this IServiceCollection services, Action<ThreaxPwshProcessHelperOptions>? configure = null)
+        {
+            var options = new ThreaxPwshProcessHelperOptions();
+            configure?.Invoke(options);
+
+            if (options.IncludeLogOutput)
+            {
+                services.TryAddScoped<IProcessRunnerFactory>(s => new CustomProcessRunnerFactory(() =>
+                {
+                    var logger = s.GetRequiredService<ILogger<DefaultPwshLog>>();
+                    var runner = new LoggingProcessRunner<DefaultPwshLog>(new ProcessRunner(), logger);
+                    return runner;
+                }));
+            }
+            else
+            {
+                services.TryAddScoped<IProcessRunnerFactory, ProcessRunnerFactory>();
+            }
+
+            services.TryAddScoped<IShellRunner, PowershellCoreRunner>();
+            services.TryAddTransient<IShellCommandBuilder, PwshCommandBuilder>();
+
+            return services;
+        }
+
         public static IServiceCollection AddThreaxPwshProcessHelper<T>(this IServiceCollection services, Action<ThreaxPwshProcessHelperOptions<T>>? configure = null)
         {
             var options = new ThreaxPwshProcessHelperOptions<T>();
@@ -29,7 +56,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             services.TryAddScoped<IShellRunner<T>, PowershellCoreRunner<T>>();
-            services.TryAddTransient<IShellCommandBuilder, PwshCommandBuilder>();
+            services.TryAddTransient<IShellCommandBuilder<T>, PwshCommandBuilder<T>>();
 
             return services;
         }

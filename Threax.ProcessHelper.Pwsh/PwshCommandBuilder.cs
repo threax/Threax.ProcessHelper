@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Threax.ProcessHelper.Pwsh
 {
-    public class PwshCommandBuilder : IShellCommandBuilder
+    public class PwshCommandBuilder<T> : IShellCommandBuilder<T>
     {
         private readonly List<FormattableString> commands = new List<FormattableString>();
         private int resultLineIndex = -1;
@@ -64,5 +64,10 @@ namespace Threax.ProcessHelper.Pwsh
             }
             return sb.ToString();
         }
+    }
+
+    public class PwshCommandBuilder : PwshCommandBuilder<PwshCommandBuilder>, IShellCommandBuilder
+    {
+
     }
 }

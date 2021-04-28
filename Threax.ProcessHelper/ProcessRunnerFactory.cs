@@ -11,4 +11,9 @@ namespace Threax.ProcessHelper
             return new ProcessRunner();
         }
     }
+
+    public class ProcessRunnerFactory : ProcessRunnerFactory<ProcessRunnerFactory>, IProcessRunnerFactory
+    {
+
+    }
 }

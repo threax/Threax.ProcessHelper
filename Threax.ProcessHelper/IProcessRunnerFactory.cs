@@ -4,4 +4,9 @@
     {
         IProcessRunner Create();
     }
+
+    public interface IProcessRunnerFactory : IProcessRunnerFactory<IShellRunner>
+    {
+
+    }
 }

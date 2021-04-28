@@ -18,4 +18,11 @@ namespace Threax.ProcessHelper
             return create.Invoke();
         }
     }
+
+    public class CustomProcessRunnerFactory : CustomProcessRunnerFactory<CustomProcessRunnerFactory>, IProcessRunnerFactory
+    {
+        public CustomProcessRunnerFactory(Func<IProcessRunner> create) : base(create)
+        {
+        }
+    }
 }
