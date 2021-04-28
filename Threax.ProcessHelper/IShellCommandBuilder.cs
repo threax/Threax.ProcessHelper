@@ -22,7 +22,7 @@ namespace Threax.ProcessHelper
         string CreateFinalEscapedCommand(out IEnumerable<KeyValuePair<string, object?>> args);
     }
 
-    public interface IShellCommandBuilder : IShellCommandBuilder<IShellCommandBuilder>
+    public interface IShellCommandBuilder : IShellCommandBuilder<IShellRunner>
     {
 
     }

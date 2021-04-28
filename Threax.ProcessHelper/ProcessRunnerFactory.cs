@@ -12,7 +12,7 @@ namespace Threax.ProcessHelper
         }
     }
 
-    public class ProcessRunnerFactory : ProcessRunnerFactory<ProcessRunnerFactory>, IProcessRunnerFactory
+    public class ProcessRunnerFactory : ProcessRunnerFactory<IShellRunner>, IProcessRunnerFactory
     {
 
     }

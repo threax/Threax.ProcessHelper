@@ -19,7 +19,7 @@ namespace Threax.ProcessHelper
         }
     }
 
-    public class CustomProcessRunnerFactory : CustomProcessRunnerFactory<CustomProcessRunnerFactory>, IProcessRunnerFactory
+    public class CustomProcessRunnerFactory : CustomProcessRunnerFactory<IShellRunner>, IProcessRunnerFactory
     {
         public CustomProcessRunnerFactory(Func<IProcessRunner> create) : base(create)
         {
