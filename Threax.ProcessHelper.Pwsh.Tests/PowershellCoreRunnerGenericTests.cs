@@ -11,7 +11,7 @@ namespace Threax.ProcessHelper.Pwsh.Tests
 
         public PowershellCoreRunnerGenericTests()
         {
-            mockup.MockServiceCollection.AddThreaxPwshProcessHelper<PowershellCoreRunnerTests>();
+            mockup.MockServiceCollection.AddThreaxPwshShellRunner<PowershellCoreRunnerTests>();
         }
 
         [Fact]

@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         class DefaultPwshLog { }
 
-        public static IServiceCollection AddThreaxPwshProcessHelper(this IServiceCollection services, Action<ThreaxPwshProcessHelperOptions>? configure = null)
+        public static IServiceCollection AddThreaxPwshShellRunner(this IServiceCollection services, Action<ThreaxPwshProcessHelperOptions>? configure = null)
         {
             var options = new ThreaxPwshProcessHelperOptions();
             configure?.Invoke(options);
@@ -36,7 +36,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddThreaxPwshProcessHelper<T>(this IServiceCollection services, Action<ThreaxPwshProcessHelperOptions<T>>? configure = null)
+        public static IServiceCollection AddThreaxPwshShellRunner<T>(this IServiceCollection services, Action<ThreaxPwshProcessHelperOptions<T>>? configure = null)
         {
             var options = new ThreaxPwshProcessHelperOptions<T>();
             configure?.Invoke(options);
