@@ -223,8 +223,16 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
             var name = "Test";
             var value = "SomeValue";
-            dynamic result = runner.RunProcess(new FormattableString[] { $"[PSCustomObject]@{{ Name = {name}; Value = {value}; }}", $" | ConvertTo-Json -Depth 2" });
+            
+            dynamic result = runner.RunProcess(
+                new FormattableString[] { 
+                    $"[PSCustomObject]@{{ Name = {name};", 
+                    $" Value = {value}; }}", 
+                    $" | ConvertTo-Json -Depth 2" 
+                });
+
             Assert.Equal("Test", (string?)result.Name);
+            Assert.Equal("SomeValue", (string?)result.Value);
         }
 
         class TestObj
@@ -259,8 +267,16 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
             var name = "Test";
             var value = "SomeValue";
-            var result = runner.RunProcess<TestObj>(new FormattableString[] { $"[PSCustomObject]@{{ Name = {name}; Value = {value}; }}", $" | ConvertTo-Json -Depth 2" });
+            
+            var result = runner.RunProcess<TestObj>(
+                new FormattableString[] {
+                    $"[PSCustomObject]@{{ Name = {name};", 
+                    $" Value = {value}; }}", 
+                    $" | ConvertTo-Json -Depth 2" 
+                });
+
             Assert.Equal("Test", result.Name);
+            Assert.Equal("SomeValue", result.Value);
         }
     }
 }
