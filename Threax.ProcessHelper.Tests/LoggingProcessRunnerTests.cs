@@ -14,8 +14,7 @@ namespace Threax.ProcessHelper.Tests
 
         public LoggingProcessRunnerTests()
         {
-            var mockLogger = new Mock<ILogger<LoggingProcessRunner<ProcessRunnerTests>>>();
-            mockup.Add(m => mockLogger.Object);
+            
         }
 
         [Fact]
