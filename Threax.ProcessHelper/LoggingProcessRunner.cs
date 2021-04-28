@@ -6,12 +6,12 @@ using System.Text;
 
 namespace Threax.ProcessHelper
 {
-    public class LoggingProcessRunner<T> : IProcessRunner
+    public class LoggingProcessRunner<TLog> : IProcessRunner
     {
         private readonly IProcessRunner child;
-        private readonly ILogger<LoggingProcessRunner<T>> logger;
+        private readonly ILogger<TLog> logger;
 
-        public LoggingProcessRunner(IProcessRunner child, ILogger<LoggingProcessRunner<T>> logger)
+        public LoggingProcessRunner(IProcessRunner child, ILogger<TLog> logger)
         {
             this.child = child;
             this.logger = logger;

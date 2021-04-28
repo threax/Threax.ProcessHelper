@@ -9,9 +9,9 @@ namespace Threax.ProcessHelper.Pwsh
 {
     public class PowershellCoreRunner<T> : IShellRunner<T>
     {
-        private readonly IProcessRunnerFactory<PowershellCoreRunner<T>> processRunnerFactory;
+        private readonly IProcessRunnerFactory<T> processRunnerFactory;
 
-        public PowershellCoreRunner(IProcessRunnerFactory<PowershellCoreRunner<T>> processRunnerFactory)
+        public PowershellCoreRunner(IProcessRunnerFactory<T> processRunnerFactory)
         {
             this.processRunnerFactory = processRunnerFactory;
         }

@@ -11,17 +11,10 @@ namespace Threax.ProcessHelper.Tests
 {
     public class JsonProcessRunnerTests
     {
-        Mockup mockup = new Mockup();
-
-        public JsonProcessRunnerTests()
-        {
-            mockup.MockServiceCollection.AddThreaxProcessHelper<ProcessRunnerTests>();
-        }
-
         [Fact]
         public void Echo()
         {
-            var factory = mockup.Get<IProcessRunnerFactory<ProcessRunnerTests>>();
+            var factory = new ProcessRunnerFactory<ProcessRunnerTests>();
             var processRunner = new JsonOutputProcessRunner(factory.Create());
             var startInfo = new ProcessStartInfo("pwsh", $"-c '{JsonOutputProcessRunner.DefaultJsonStart}'; 'hi' | ConvertTo-Json; '{JsonOutputProcessRunner.DefaultJsonEnd}'");
             var result = processRunner.Run(startInfo);
@@ -36,7 +29,7 @@ namespace Threax.ProcessHelper.Tests
         [Fact]
         public void Null()
         {
-            var factory = mockup.Get<IProcessRunnerFactory<ProcessRunnerTests>>();
+            var factory = new ProcessRunnerFactory<ProcessRunnerTests>();
             var processRunner = new JsonOutputProcessRunner(factory.Create());
             var startInfo = new ProcessStartInfo("pwsh", $"-c '{JsonOutputProcessRunner.DefaultJsonStart}'; $null | ConvertTo-Json; '{JsonOutputProcessRunner.DefaultJsonEnd}'");
             var result = processRunner.Run(startInfo);
@@ -51,7 +44,7 @@ namespace Threax.ProcessHelper.Tests
         [Fact]
         public void True()
         {
-            var factory = mockup.Get<IProcessRunnerFactory<ProcessRunnerTests>>();
+            var factory = new ProcessRunnerFactory<ProcessRunnerTests>();
             var processRunner = new JsonOutputProcessRunner(factory.Create());
             var startInfo = new ProcessStartInfo("pwsh", $"-c '{JsonOutputProcessRunner.DefaultJsonStart}'; $true | ConvertTo-Json; '{JsonOutputProcessRunner.DefaultJsonEnd}'");
             var result = processRunner.Run(startInfo);
@@ -66,7 +59,7 @@ namespace Threax.ProcessHelper.Tests
         [Fact]
         public void False()
         {
-            var factory = mockup.Get<IProcessRunnerFactory<ProcessRunnerTests>>();
+            var factory = new ProcessRunnerFactory<ProcessRunnerTests>();
             var processRunner = new JsonOutputProcessRunner(factory.Create());
             var startInfo = new ProcessStartInfo("pwsh", $"-c '{JsonOutputProcessRunner.DefaultJsonStart}'; $false | ConvertTo-Json; '{JsonOutputProcessRunner.DefaultJsonEnd}'");
             var result = processRunner.Run(startInfo);
@@ -81,7 +74,7 @@ namespace Threax.ProcessHelper.Tests
         [Fact]
         public void Number()
         {
-            var factory = mockup.Get<IProcessRunnerFactory<ProcessRunnerTests>>();
+            var factory = new ProcessRunnerFactory<ProcessRunnerTests>();
             var processRunner = new JsonOutputProcessRunner(factory.Create());
             var startInfo = new ProcessStartInfo("pwsh", $"-c '{JsonOutputProcessRunner.DefaultJsonStart}'; 1 | ConvertTo-Json; '{JsonOutputProcessRunner.DefaultJsonEnd}'");
             var result = processRunner.Run(startInfo);
@@ -103,7 +96,7 @@ namespace Threax.ProcessHelper.Tests
         [Fact]
         public void Object()
         {
-            var factory = mockup.Get<IProcessRunnerFactory<ProcessRunnerTests>>();
+            var factory = new ProcessRunnerFactory<ProcessRunnerTests>();
             var processRunner = new JsonOutputProcessRunner(factory.Create());
             var startInfo = new ProcessStartInfo("pwsh", $"-c '{JsonOutputProcessRunner.DefaultJsonStart}'; New-Object -TypeName PSObject -Property @{{Number = 4; String = 'hello';}} | ConvertTo-Json; '{JsonOutputProcessRunner.DefaultJsonEnd}'");
             var result = processRunner.Run(startInfo);
@@ -119,7 +112,7 @@ namespace Threax.ProcessHelper.Tests
         [Fact]
         public void EchoError()
         {
-            var factory = mockup.Get<IProcessRunnerFactory<ProcessRunnerTests>>();
+            var factory = new ProcessRunnerFactory<ProcessRunnerTests>();
             var processRunner = new JsonOutputProcessRunner(factory.Create());
             var startInfo = new ProcessStartInfo("pwsh", "-c Write-Error 'hi'");
             var result = processRunner.Run(startInfo);
@@ -130,7 +123,7 @@ namespace Threax.ProcessHelper.Tests
         [Fact]
         public void Fail()
         {
-            var factory = mockup.Get<IProcessRunnerFactory<ProcessRunnerTests>>();
+            var factory = new ProcessRunnerFactory<ProcessRunnerTests>();
             var processRunner = new JsonOutputProcessRunner(factory.Create());
             var startInfo = new ProcessStartInfo("pwsh", "asdfdsaf");
             var result = processRunner.Run(startInfo);
