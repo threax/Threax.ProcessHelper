@@ -89,6 +89,20 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         }
 
         [Fact]
+        public void RunProcessCommandsObjectSecurityCheckRawProcessStringFail()
+        {
+            var runner = mockup.Get<IShellRunner>();
+            var builder = mockup.Get<IShellCommandBuilder>();
+            var evil = "echo hi";
+            builder.AddCommand($"'Before'");
+            builder.AddResultCommand($"{new RawProcessString(evil)}");
+            builder.AddCommand($"'After'");
+            var result = runner.RunProcess<String>(builder);
+            Assert.NotEqual("echo hi", result);
+            Assert.Equal("hi", result); //Since raw process string was used the command can execute and we get back "hi" not "echo hi" as we would not using RawProcessString.
+        }
+
+        [Fact]
         public void RunProcessCommandsObject()
         {
             var runner = mockup.Get<IShellRunner>();

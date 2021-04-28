@@ -69,9 +69,17 @@ namespace Threax.ProcessHelper.Pwsh
 
             public string Format(string? format, object? arg, IFormatProvider? formatProvider)
             {
-                var index = values.Count;
-                values.Add(arg);
-                return GetEnvArg(index);
+                var rawArg = arg as RawProcessString;
+                if (rawArg != null)
+                {
+                    return rawArg.Value;
+                }
+                else
+                {
+                    var index = values.Count;
+                    values.Add(arg);
+                    return GetEnvArg(index);
+                }
             }
 
             private String GetEnvArg(int index)
