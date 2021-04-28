@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Threax.ProcessHelper.Pwsh
 {
-    public class PwshCommandBuilder : IPwshCommandBuilder
+    public class PwshCommandBuilder : IShellCommandBuilder
     {
         private readonly List<FormattableString> commands = new List<FormattableString>();
         private int resultLineIndex = -1;
@@ -35,7 +35,7 @@ namespace Threax.ProcessHelper.Pwsh
             commands.Add(command);
         }
 
-        public String BuildOneLineCommand(out IEnumerable<KeyValuePair<String, Object?>> args)
+        public String CreateFinalEscapedCommand(out IEnumerable<KeyValuePair<String, Object?>> args)
         {
             if(resultLineIndex == -1)
             {

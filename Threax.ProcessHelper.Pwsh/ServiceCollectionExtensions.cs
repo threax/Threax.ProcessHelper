@@ -22,8 +22,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 }
             });
 
-            services.TryAddScoped<IPowershellCoreRunner<T>, PowershellCoreRunner<T>>();
-            services.TryAddTransient<IPwshCommandBuilder, PwshCommandBuilder>();
+            services.TryAddScoped<IShellRunner<T>, PowershellCoreRunner<T>>();
+            services.TryAddTransient<IShellCommandBuilder, PwshCommandBuilder>();
 
             return services;
         }

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Threax.ProcessHelper.Pwsh
 {
-    public class PowershellCoreRunner<T> : IPowershellCoreRunner<T>
+    public class PowershellCoreRunner<T> : IShellRunner<T>
     {
         private readonly IProcessRunnerFactory<PowershellCoreRunner<T>> processRunnerFactory;
 
@@ -84,11 +84,11 @@ namespace Threax.ProcessHelper.Pwsh
             return runner.GetResult();
         }
 
-        public void RunProcessVoid(IPwshCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        public void RunProcessVoid(IShellCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
         {
             var runner = processRunnerFactory.Create();
 
-            var escapedCommand = builder.BuildOneLineCommand(out var args);
+            var escapedCommand = builder.CreateFinalEscapedCommand(out var args);
             var startInfo = SetupArgs(escapedCommand, args);
             var exitCode = runner.Run(startInfo);
             if (exitCode != validExitCode)
@@ -97,19 +97,19 @@ namespace Threax.ProcessHelper.Pwsh
             }
         }
 
-        public TResult? RunProcess<TResult>(IPwshCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        public TResult? RunProcess<TResult>(IShellCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
         {
             var result = RunProcess(builder, validExitCode, invalidExitCodeMessage);
             return result.ToObject<TResult>();
         }
 
-        public JToken RunProcess(IPwshCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        public JToken RunProcess(IShellCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
         {
             var runner = new JsonOutputProcessRunner(processRunnerFactory.Create());
             var jsonStart = EscapePwshSingleQuote(runner.JsonStart);
             var jsonEnd = EscapePwshSingleQuote(runner.JsonEnd);
 
-            var escapedCommand = builder.BuildOneLineCommand(out var args);
+            var escapedCommand = builder.CreateFinalEscapedCommand(out var args);
             var finalCommand = $"{escapedCommand};${builder.ResultVariableName} = ${builder.ResultVariableName} | ConvertTo-Json -Depth {builder.JsonDepth};'{jsonStart}';${builder.ResultVariableName};'{jsonEnd}'";
             var startInfo = SetupArgs(finalCommand, args);
             var exitCode = runner.Run(startInfo);
