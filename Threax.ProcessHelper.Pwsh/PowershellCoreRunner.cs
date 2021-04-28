@@ -16,10 +16,21 @@ namespace Threax.ProcessHelper.Pwsh
             this.processRunnerFactory = processRunnerFactory;
         }
 
+        public void RunProcessVoid(IEnumerable<FormattableString> command, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        {
+            var escapedCommand = command.GetPwshEnvString(out var args);
+            DoRunProcessVoid(escapedCommand, args, validExitCode, invalidExitCodeMessage);
+        }
+
         public void RunProcessVoid(FormattableString command, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
         {
-            var runner = processRunnerFactory.Create();
             var escapedCommand = command.GetPwshEnvString(out var args);
+            DoRunProcessVoid(escapedCommand, args, validExitCode, invalidExitCodeMessage);
+        }
+
+        private void DoRunProcessVoid(String escapedCommand, IEnumerable<KeyValuePair<string, object?>> args, int validExitCode, string invalidExitCodeMessage)
+        {
+            var runner = processRunnerFactory.Create();
             var finalCommand = $"{escapedCommand};exit $LASTEXITCODE";
             var startInfo = SetupArgs(finalCommand, args);
             var exitCode = runner.Run(startInfo);

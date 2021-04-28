@@ -6,6 +6,19 @@ namespace Threax.ProcessHelper.Pwsh
 {
     static class PwshEnvArgFormatter
     {
+        public static String GetPwshEnvString(this IEnumerable<FormattableString> str, out IEnumerable<KeyValuePair<String, Object?>> args, string prefix = "")
+        {
+            var sb = new StringBuilder();
+            var formatter = new EnvArgFormatter(prefix);
+            var formatProvider = new EnvArgFormatProvider(formatter);
+            foreach (var i in str)
+            {
+                sb.AppendFormat(formatProvider, i.Format, i.GetArguments());
+            }
+            args = formatter.GetEnvArgs();
+            return sb.ToString();
+        }
+
         public static String GetPwshEnvString(this FormattableString str, out IEnumerable<KeyValuePair<String, Object?>> args, string prefix = "")
         {
             var formatter = new EnvArgFormatter(prefix);

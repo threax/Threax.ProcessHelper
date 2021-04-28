@@ -181,6 +181,14 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         }
 
         [Fact]
+        public void RunProcessVoidEnumerable()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var numTimes = 5;
+            runner.RunProcessVoid(new FormattableString[] { $"ping threax.com", $" -n {numTimes}" });
+        }
+
+        [Fact]
         public void RunProcessVoidFail()
         {
             var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
