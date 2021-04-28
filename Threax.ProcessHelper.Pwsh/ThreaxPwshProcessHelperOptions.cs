@@ -8,9 +8,9 @@ namespace Threax.ProcessHelper.Pwsh
     public class ThreaxPwshProcessHelperOptions<T>
     {
         /// <summary>
-        /// Set this to true to have the log output written during commands.
+        /// Set this to true to have the log output written during commands. Default: true
         /// </summary>
-        public bool IncludeLogOutput { get; set; }
+        public bool IncludeLogOutput { get; set; } = true;
     }
 
     public class ThreaxPwshProcessHelperOptions : ThreaxPwshProcessHelperOptions<ThreaxPwshProcessHelperOptions>
