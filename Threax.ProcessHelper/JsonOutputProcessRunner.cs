@@ -86,12 +86,18 @@ namespace Threax.ProcessHelper
         /// <returns>A JToken of the parsed returned json.</returns>
         public JToken GetResult()
         {
-            if (!HadJsonOutput)
+            JToken result;
+            if (HadJsonOutput)
             {
-                throw new InvalidOperationException("Cannot get a result since no json output was provided by the underlying process.");
+                var json = jsonBuilder.ToString();
+                result = JToken.Parse(json); 
             }
-            var json = jsonBuilder.ToString();
-            return JToken.Parse(json);
+            else
+            {
+                result = JToken.Parse("null");
+            }
+
+            return result;
         }
 
         /// <summary>

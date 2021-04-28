@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using System;
 using Threax.AspNetCore.Tests;
 using Xunit;
@@ -11,6 +12,7 @@ namespace Threax.ProcessHelper.Pwsh.Tests
 
         public PowershellCoreRunnerTests()
         {
+            mockup.MockServiceCollection.AddLogging();
             mockup.MockServiceCollection.AddThreaxPwshShellRunner();
         }
 
@@ -257,6 +259,14 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         }
 
         [Fact]
+        public void RunProcessJTokenNoOutput()
+        {
+            var runner = mockup.Get<IShellRunner>();
+            var result = runner.RunProcess($"");
+            Assert.Equal(JTokenType.Null, result.Type);
+        }
+
+        [Fact]
         public void RunProcessObject()
         {
             var runner = mockup.Get<IShellRunner>();
@@ -291,6 +301,14 @@ namespace Threax.ProcessHelper.Pwsh.Tests
 
             Assert.Equal("Test", result.Name);
             Assert.Equal("SomeValue", result.Value);
+        }
+
+        [Fact]
+        public void RunProcessObjectNoOutput()
+        {
+            var runner = mockup.Get<IShellRunner>();
+            var result = runner.RunProcess<TestObj>($"");
+            Assert.Null(result);
         }
     }
 }
