@@ -216,6 +216,17 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             Assert.Throws<InvalidOperationException>(() => runner.RunProcess($"[PSCustomObject]@{{ Name = {name}; Value = {value}; }} | ConvertTo-Json -Depth 2; throw;"));
         }
 
+        [Fact]
+        public void RunProcessJTokenEnumerable()
+        {
+
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var name = "Test";
+            var value = "SomeValue";
+            dynamic result = runner.RunProcess(new FormattableString[] { $"[PSCustomObject]@{{ Name = {name}; Value = {value}; }}", $" | ConvertTo-Json -Depth 2" });
+            Assert.Equal("Test", (string?)result.Name);
+        }
+
         class TestObj
         {
             public String Name { get; set; }
@@ -240,6 +251,16 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             var name = "Test";
             var value = "SomeValue";
             Assert.Throws<InvalidOperationException>(() => runner.RunProcess<TestObj>($"[PSCustomObject]@{{ Name = {name}; Value = {value}; }} | ConvertTo-Json -Depth 2; throw;"));
+        }
+
+        [Fact]
+        public void RunProcessObjectEnumerable()
+        {
+            var runner = mockup.Get<IPowershellCoreRunner<PowershellCoreRunnerTests>>();
+            var name = "Test";
+            var value = "SomeValue";
+            var result = runner.RunProcess<TestObj>(new FormattableString[] { $"[PSCustomObject]@{{ Name = {name}; Value = {value}; }}", $" | ConvertTo-Json -Depth 2" });
+            Assert.Equal("Test", result.Name);
         }
     }
 }

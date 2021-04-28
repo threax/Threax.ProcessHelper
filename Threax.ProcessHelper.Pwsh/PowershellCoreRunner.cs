@@ -40,19 +40,40 @@ namespace Threax.ProcessHelper.Pwsh
             }
         }
 
-        public TResult? RunProcess<TResult>(FormattableString command, int validExitCode = 0, String invalidExitCodeMessage = "Invalid exit code for process.")
+        public TResult? RunProcess<TResult>(IEnumerable<FormattableString> command, int validExitCode = 0, String invalidExitCodeMessage = "Invalid exit code for process.")
         {
-            var result = RunProcess(command, validExitCode, invalidExitCodeMessage);
+            var escapedCommand = command.GetPwshEnvString(out var args);
+            var result = DoRunProcess(escapedCommand, args, validExitCode, invalidExitCodeMessage);
             return result.ToObject<TResult>();
         }
 
+        public TResult? RunProcess<TResult>(FormattableString command, int validExitCode = 0, String invalidExitCodeMessage = "Invalid exit code for process.")
+        {
+            var escapedCommand = command.GetPwshEnvString(out var args);
+            var result = DoRunProcess(escapedCommand, args, validExitCode, invalidExitCodeMessage);
+            return result.ToObject<TResult>();
+        }
+
+        public JToken RunProcess(IEnumerable<FormattableString> command, int validExitCode = 0, String invalidExitCodeMessage = "Invalid exit code for process.")
+        {
+            var escapedCommand = command.GetPwshEnvString(out var args);
+            var result = DoRunProcess(escapedCommand, args, validExitCode, invalidExitCodeMessage);
+            return result;
+        }
+
         public JToken RunProcess(FormattableString command, int validExitCode = 0, String invalidExitCodeMessage = "Invalid exit code for process.")
+        {
+            var escapedCommand = command.GetPwshEnvString(out var args);
+            var result = DoRunProcess(escapedCommand, args, validExitCode, invalidExitCodeMessage);
+            return result;
+        }
+
+        private JToken DoRunProcess(String escapedCommand, IEnumerable<KeyValuePair<string, object?>> args, int validExitCode, String invalidExitCodeMessage)
         {
             var runner = new JsonOutputProcessRunner(processRunnerFactory.Create());
             var jsonStart = EscapePwshSingleQuote(runner.JsonStart);
             var jsonEnd = EscapePwshSingleQuote(runner.JsonEnd);
 
-            var escapedCommand = command.GetPwshEnvString(out var args);
             var finalCommand = $"'{jsonStart}';{escapedCommand};'{jsonEnd}';exit $LASTEXITCODE";
             var startInfo = SetupArgs(finalCommand, args);
             var exitCode = runner.Run(startInfo);
