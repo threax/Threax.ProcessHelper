@@ -16,19 +16,20 @@ namespace Microsoft.Extensions.DependencyInjection
             var options = new ThreaxPwshProcessHelperOptions();
             configure?.Invoke(options);
 
-            if (options.IncludeLogOutput)
+            services.TryAddScoped<IProcessRunnerFactory>(s => new CustomProcessRunnerFactory(() =>
             {
-                services.TryAddScoped<IProcessRunnerFactory>(s => new CustomProcessRunnerFactory(() =>
+                var logger = s.GetRequiredService<ILogger<DefaultPwshLog>>();
+                IProcessRunner runner = new ProcessRunner();
+                if (options.IncludeLogOutput)
                 {
-                    var logger = s.GetRequiredService<ILogger<DefaultPwshLog>>();
-                    var runner = new LoggingProcessRunner<DefaultPwshLog>(new ProcessRunner(), logger);
-                    return runner;
-                }));
-            }
-            else
-            {
-                services.TryAddScoped<IProcessRunnerFactory, ProcessRunnerFactory>();
-            }
+                    runner = new LoggingProcessRunner<DefaultPwshLog>(runner, logger);
+                }
+                if (options.DecorateProcessRunner != null)
+                {
+                    runner = options.DecorateProcessRunner.Invoke(runner);
+                }
+                return runner;
+            }));
 
             services.TryAddScoped<IShellRunner, PowershellCoreRunner>();
             services.TryAddTransient<IShellCommandBuilder, PwshCommandBuilder>();
