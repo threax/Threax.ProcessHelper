@@ -22,6 +22,7 @@ namespace Threax.ProcessHelper
             return child.Run(startInfo, new ProcessEvents()
             {
                 ProcessCreated = events?.ProcessCreated,
+                ProcessCompleted = events?.ProcessCompleted,
                 ErrorDataReceived = (s, e) =>
                 {
                     if (!String.IsNullOrEmpty(e.Data))

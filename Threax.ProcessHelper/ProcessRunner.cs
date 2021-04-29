@@ -30,6 +30,8 @@ namespace Threax.ProcessHelper
 
             process.WaitForExit();
 
+            events?.ProcessCompleted?.Invoke(process);
+
             return process.ExitCode;
         }
     }

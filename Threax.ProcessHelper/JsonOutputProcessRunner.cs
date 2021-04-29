@@ -36,6 +36,7 @@ namespace Threax.ProcessHelper
             LastExitCode = child.Run(startInfo, new ProcessEvents()
             {
                 ProcessCreated = events?.ProcessCreated,
+                ProcessCompleted = events?.ProcessCompleted,
                 ErrorDataReceived = (s, e) =>
                 {
                     events?.ErrorDataReceived?.Invoke(s, e);
