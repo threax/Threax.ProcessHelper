@@ -18,10 +18,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.TryAddScoped<IProcessRunnerFactory>(s => new CustomProcessRunnerFactory(() =>
             {
-                var logger = s.GetRequiredService<ILogger<DefaultPwshLog>>();
                 IProcessRunner runner = new ProcessRunner();
                 if (options.IncludeLogOutput)
                 {
+                    var logger = s.GetRequiredService<ILogger<DefaultPwshLog>>();
                     runner = new LoggingProcessRunner<DefaultPwshLog>(runner, logger);
                 }
                 if (options.DecorateProcessRunner != null)
