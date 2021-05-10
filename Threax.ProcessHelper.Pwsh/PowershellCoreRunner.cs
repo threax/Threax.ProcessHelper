@@ -183,6 +183,11 @@ namespace Threax.ProcessHelper.Pwsh
             return RunActionAsync(() => RunProcessVoid(builder, validExitCode, invalidExitCodeMessage));
         }
 
+        public IShellCommandBuilder CreateCommandBuilder()
+        {
+            return new PwshCommandBuilder();
+        }
+
         private Task<T> RunFuncAsync<T>(Func<T> func)
         {
             var task = new TaskCompletionSource<T>();
