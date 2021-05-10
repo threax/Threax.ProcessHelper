@@ -20,7 +20,8 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         public void RunProcessCommandsVoidSecurityCheck()
         {
             var runner = mockup.Get<IShellRunner>();
-            var builder = mockup.Get<IShellCommandBuilder>();
+            var factory = mockup.Get<IShellCommandBuilderFactory>();
+            var builder = factory.Create();
             var evil = "exit 44;";
             builder.AddCommand($"'Before'");
             builder.AddResultCommand($"{evil}");
@@ -32,7 +33,8 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         public void RunProcessCommandsVoid()
         {
             var runner = mockup.Get<IShellRunner>();
-            var builder = mockup.Get<IShellCommandBuilder>();
+            var factory = mockup.Get<IShellCommandBuilderFactory>();
+            var builder = factory.Create();
             builder.AddCommand($"'Before'");
             builder.AddResultCommand($"'Hi'");
             builder.AddCommand($"'After'");
@@ -43,7 +45,8 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         public void RunProcessCommandsJTokenSecurityCheck()
         {
             var runner = mockup.Get<IShellRunner>();
-            var builder = mockup.Get<IShellCommandBuilder>();
+            var factory = mockup.Get<IShellCommandBuilderFactory>();
+            var builder = factory.Create();
             var evil = "echo hi";
             builder.AddCommand($"'Before'");
             builder.AddResultCommand($"{evil}");
@@ -56,7 +59,8 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         public void RunProcessCommandsJToken()
         {
             var runner = mockup.Get<IShellRunner>();
-            var builder = mockup.Get<IShellCommandBuilder>();
+            var factory = mockup.Get<IShellCommandBuilderFactory>();
+            var builder = factory.Create();
             builder.AddCommand($"'Before'");
             builder.AddResultCommand($"'Hi'");
             builder.AddCommand($"'After'");
@@ -68,7 +72,8 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         public void RunProcessCommandJTokenArgs()
         {
             var runner = mockup.Get<IShellRunner>();
-            var builder = mockup.Get<IShellCommandBuilder>();
+            var factory = mockup.Get<IShellCommandBuilderFactory>();
+            var builder = factory.Create();
             var info = "Hi";
             builder.AddCommand($"'Before'");
             builder.AddResultCommand($"{info}");
@@ -81,7 +86,8 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         public void RunProcessCommandsObjectSecurityCheck()
         {
             var runner = mockup.Get<IShellRunner>();
-            var builder = mockup.Get<IShellCommandBuilder>();
+            var factory = mockup.Get<IShellCommandBuilderFactory>();
+            var builder = factory.Create();
             var evil = "echo hi";
             builder.AddCommand($"'Before'");
             builder.AddResultCommand($"{evil}");
@@ -94,7 +100,8 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         public void RunProcessCommandsObjectSecurityCheckRawProcessStringFail()
         {
             var runner = mockup.Get<IShellRunner>();
-            var builder = mockup.Get<IShellCommandBuilder>();
+            var factory = mockup.Get<IShellCommandBuilderFactory>();
+            var builder = factory.Create();
             var evil = "echo hi";
             builder.AddCommand($"'Before'");
             builder.AddResultCommand($"{new RawProcessString(evil)}");
@@ -108,7 +115,8 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         public void RunProcessCommandsObject()
         {
             var runner = mockup.Get<IShellRunner>();
-            var builder = mockup.Get<IShellCommandBuilder>();
+            var factory = mockup.Get<IShellCommandBuilderFactory>();
+            var builder = factory.Create();
             builder.AddCommand($"'Before'");
             builder.AddResultCommand($"'Hi'");
             builder.AddCommand($"'After'");
@@ -120,7 +128,8 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         public void RunProcessCommandArgs()
         {
             var runner = mockup.Get<IShellRunner>();
-            var builder = mockup.Get<IShellCommandBuilder>();
+            var factory = mockup.Get<IShellCommandBuilderFactory>();
+            var builder = factory.Create();
             var info = "Hi";
             builder.AddCommand($"'Before'");
             builder.AddResultCommand($"{info}");
@@ -133,7 +142,8 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         public void RunProcessCommandMultiArgsBefore()
         {
             var runner = mockup.Get<IShellRunner>();
-            var builder = mockup.Get<IShellCommandBuilder>();
+            var factory = mockup.Get<IShellCommandBuilderFactory>();
+            var builder = factory.Create();
             var info = "Hi";
             var dummy = "Dummy";
             builder.AddCommand($"'Before'");
@@ -150,7 +160,8 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         public void RunProcessCommandMultiArgsAfter()
         {
             var runner = mockup.Get<IShellRunner>();
-            var builder = mockup.Get<IShellCommandBuilder>();
+            var factory = mockup.Get<IShellCommandBuilderFactory>();
+            var builder = factory.Create();
             var info = "Hi";
             var dummy = "Dummy";
             builder.AddCommand($"'Before'");
@@ -172,7 +183,8 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         public void GetHost()
         {
             var runner = mockup.Get<IShellRunner>();
-            var builder = mockup.Get<IShellCommandBuilder>();
+            var factory = mockup.Get<IShellCommandBuilderFactory>();
+            var builder = factory.Create();
             builder.JsonDepth = 2; //This command benefits from a small json depth
             builder.AddResultCommand($"Get-Host");
             var result = runner.RunProcess<HostInfo>(builder);
@@ -183,9 +195,10 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         public void FailMultipleResults()
         {
             var runner = mockup.Get<IShellRunner>();
-            var commandBuilder = mockup.Get<IShellCommandBuilder>();
-            commandBuilder.AddResultCommand($"'Hi'");
-            Assert.Throws<InvalidOperationException>(() => commandBuilder.AddResultCommand($"'Hi'"));
+            var factory = mockup.Get<IShellCommandBuilderFactory>();
+            var builder = factory.Create();
+            builder.AddResultCommand($"'Hi'");
+            Assert.Throws<InvalidOperationException>(() => builder.AddResultCommand($"'Hi'"));
         }
 
         [Fact]

@@ -86,7 +86,7 @@ namespace Threax.ProcessHelper.Pwsh
             return runner.GetResult();
         }
 
-        public void RunProcessVoid(IShellCommandBuilder<T> builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        public void RunProcessVoid(IShellCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
         {
             var runner = processRunnerFactory.Create();
 
@@ -99,13 +99,13 @@ namespace Threax.ProcessHelper.Pwsh
             }
         }
 
-        public TResult? RunProcess<TResult>(IShellCommandBuilder<T> builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        public TResult? RunProcess<TResult>(IShellCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
         {
             var result = RunProcess(builder, validExitCode, invalidExitCodeMessage);
             return result.ToObject<TResult>();
         }
 
-        public JToken RunProcess(IShellCommandBuilder<T> builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        public JToken RunProcess(IShellCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
         {
             var runner = new JsonOutputProcessRunner(processRunnerFactory.Create());
             var jsonStart = EscapePwshSingleQuote(runner.JsonStart);
@@ -143,7 +143,7 @@ namespace Threax.ProcessHelper.Pwsh
             return RunFuncAsync<JToken>(() => RunProcess(command, validExitCode, invalidExitCodeMessage));
         }
 
-        public Task<JToken> RunProcessAsync(IShellCommandBuilder<T> builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        public Task<JToken> RunProcessAsync(IShellCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
         {
             return RunFuncAsync<JToken>(() => RunProcess(builder, validExitCode, invalidExitCodeMessage));
         }
@@ -153,7 +153,7 @@ namespace Threax.ProcessHelper.Pwsh
             return RunFuncAsync<TResult?>(() => RunProcess<TResult>(command, validExitCode, invalidExitCodeMessage));
         }
 
-        public Task<TResult?> RunProcessAsync<TResult>(IShellCommandBuilder<T> builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        public Task<TResult?> RunProcessAsync<TResult>(IShellCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
         {
             return RunFuncAsync<TResult?>(() => RunProcess<TResult>(builder, validExitCode, invalidExitCodeMessage));
         }
@@ -178,7 +178,7 @@ namespace Threax.ProcessHelper.Pwsh
             return RunActionAsync(() => RunProcessVoid(command, validExitCode, invalidExitCodeMessage));
         }
 
-        public Task RunProcessVoidAsync(IShellCommandBuilder<T> builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        public Task RunProcessVoidAsync(IShellCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
         {
             return RunActionAsync(() => RunProcessVoid(builder, validExitCode, invalidExitCodeMessage));
         }
