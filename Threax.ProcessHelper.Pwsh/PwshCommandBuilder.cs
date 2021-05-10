@@ -7,7 +7,7 @@ namespace Threax.ProcessHelper.Pwsh
 {
     public class PwshCommandBuilder : IShellCommandBuilder
     {
-        private readonly List<FormattableString> commands = new List<FormattableString>();
+        private readonly List<IEnumerable<FormattableString>> commands = new List<IEnumerable<FormattableString>>();
         private int resultLineIndex = -1;
 
         public PwshCommandBuilder()
@@ -21,10 +21,20 @@ namespace Threax.ProcessHelper.Pwsh
 
         public void AddCommand(FormattableString command)
         {
+            AddCommand(new FormattableString[] { command });
+        }
+
+        public void AddCommand(IEnumerable<FormattableString> command)
+        {
             commands.Add(command);
         }
 
         public void AddResultCommand(FormattableString command)
+        {
+            AddResultCommand(new FormattableString[] { command });
+        }
+
+        public void AddResultCommand(IEnumerable<FormattableString> command)
         {
             if (resultLineIndex != -1)
             {

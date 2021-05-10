@@ -16,9 +16,11 @@ namespace Threax.ProcessHelper
         int JsonDepth { get; set; }
 
         void AddCommand(FormattableString command);
+        void AddCommand(IEnumerable<FormattableString> command);
 
         void AddResultCommand(FormattableString command);
-        
+        void AddResultCommand(IEnumerable<FormattableString> command);
+
         string CreateFinalEscapedCommand(out IEnumerable<KeyValuePair<string, object?>> args);
     }
 }
