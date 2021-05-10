@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Threax.ProcessHelper.Pwsh
 {
@@ -134,6 +136,91 @@ namespace Threax.ProcessHelper.Pwsh
         {
             value = value.Replace("'", "''");
             return value;
+        }
+
+        public Task<JToken> RunProcessAsync(FormattableString command, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        {
+            return RunFuncAsync<JToken>(() => RunProcess(command, validExitCode, invalidExitCodeMessage));
+        }
+
+        public Task<JToken> RunProcessAsync(IShellCommandBuilder<T> builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        {
+            return RunFuncAsync<JToken>(() => RunProcess(builder, validExitCode, invalidExitCodeMessage));
+        }
+
+        public Task<TResult?> RunProcessAsync<TResult>(FormattableString command, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        {
+            return RunFuncAsync<TResult?>(() => RunProcess<TResult>(command, validExitCode, invalidExitCodeMessage));
+        }
+
+        public Task<TResult?> RunProcessAsync<TResult>(IShellCommandBuilder<T> builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        {
+            return RunFuncAsync<TResult?>(() => RunProcess<TResult>(builder, validExitCode, invalidExitCodeMessage));
+        }
+
+        public Task<JToken> RunProcessAsync(IEnumerable<FormattableString> command, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        {
+            return RunFuncAsync<JToken>(() => RunProcess(command, validExitCode, invalidExitCodeMessage));
+        }
+
+        public Task<TResult?> RunProcessAsync<TResult>(IEnumerable<FormattableString> command, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        {
+            return RunFuncAsync<TResult?>(() => RunProcess<TResult>(command, validExitCode, invalidExitCodeMessage));
+        }
+
+        public Task RunProcessVoidAsync(IEnumerable<FormattableString> command, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        {
+            return RunActionAsync(() => RunProcessVoid(command, validExitCode, invalidExitCodeMessage));
+        }
+
+        public Task RunProcessVoidAsync(FormattableString command, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        {
+            return RunActionAsync(() => RunProcessVoid(command, validExitCode, invalidExitCodeMessage));
+        }
+
+        public Task RunProcessVoidAsync(IShellCommandBuilder<T> builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
+        {
+            return RunActionAsync(() => RunProcessVoid(builder, validExitCode, invalidExitCodeMessage));
+        }
+
+        private Task<T> RunFuncAsync<T>(Func<T> func)
+        {
+            var task = new TaskCompletionSource<T>();
+
+            ThreadPool.QueueUserWorkItem((s) =>
+            {
+                try
+                {
+                    var result = func.Invoke();
+                    task.SetResult(result);
+                }
+                catch (Exception ex)
+                {
+                    task.SetException(ex);
+                }
+            });
+
+            return task.Task;
+        }
+
+        private Task RunActionAsync(Action func)
+        {
+            var task = new TaskCompletionSource<object>();
+
+            ThreadPool.QueueUserWorkItem((s) =>
+            {
+                try
+                {
+                    func.Invoke();
+                    task.SetResult(func);
+                }
+                catch (Exception ex)
+                {
+                    task.SetException(ex);
+                }
+            });
+
+            return task.Task;
         }
     }
 
