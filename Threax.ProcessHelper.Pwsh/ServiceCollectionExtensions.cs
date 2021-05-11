@@ -16,20 +16,8 @@ namespace Microsoft.Extensions.DependencyInjection
             var options = new ThreaxPwshProcessHelperOptions();
             configure?.Invoke(options);
 
-            services.TryAddScoped<IProcessRunnerFactory>(s => new CustomProcessRunnerFactory(() =>
-            {
-                IProcessRunner runner = new ProcessRunner();
-                if (options.IncludeLogOutput)
-                {
-                    var logger = s.GetRequiredService<ILogger<DefaultPwshLog>>();
-                    runner = new LoggingProcessRunner<DefaultPwshLog>(runner, logger);
-                }
-                if (options.DecorateProcessRunner != null)
-                {
-                    runner = options.DecorateProcessRunner.Invoke(runner);
-                }
-                return runner;
-            }));
+            services.TryAddScoped<IProcessRunnerFactory>(
+                s => new CustomProcessRunnerFactory(() => CreateRunner(s, options)));
 
             services.TryAddScoped<IShellRunner, PowershellCoreRunner>();
 
@@ -41,23 +29,35 @@ namespace Microsoft.Extensions.DependencyInjection
             var options = new ThreaxPwshProcessHelperOptions<T>();
             configure?.Invoke(options);
 
-            if (options.IncludeLogOutput)
-            {
-                services.TryAddScoped<IProcessRunnerFactory<T>>(s => new CustomProcessRunnerFactory<T>(() =>
-                {
-                    var logger = s.GetRequiredService<ILogger<T>>();
-                    var runner = new LoggingProcessRunner<T>(new ProcessRunner(), logger);
-                    return runner;
-                }));
-            }
-            else
-            {
-                services.TryAddScoped<IProcessRunnerFactory<T>, ProcessRunnerFactory<T>>();
-            }
+            services.TryAddScoped<IProcessRunnerFactory<T>>(
+                s => new CustomProcessRunnerFactory<T>(() => CreateRunner(s, options)));
 
             services.TryAddScoped<IShellRunner<T>, PowershellCoreRunner<T>>();
 
             return services;
+        }
+
+        private static IProcessRunner CreateRunner<T>(IServiceProvider s, ThreaxPwshProcessHelperOptions<T> options)
+        {
+            IProcessRunner runner = new ProcessRunner();
+            if (options.IncludeLogOutput)
+            {
+                try
+                {
+                    var logger = s.GetRequiredService<ILogger<DefaultPwshLog>>();
+                    runner = new LoggingProcessRunner<DefaultPwshLog>(runner, logger);
+                }
+                catch (ObjectDisposedException)
+                {
+                    //Sometimes this is called after the context is disposed.
+                    //If that happens it is ok, logging will not be included.
+                }
+            }
+            if (options.DecorateProcessRunner != null)
+            {
+                runner = options.DecorateProcessRunner.Invoke(runner);
+            }
+            return runner;
         }
     }
 }
