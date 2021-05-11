@@ -9,6 +9,11 @@ namespace Threax.ProcessHelper
     {
         public int Run(ProcessStartInfo startInfo, ProcessEvents? events = null)
         {
+            var errorEventArgs = new ProcessEventArgs();
+            errorEventArgs.Reset();
+            var outputEventArgs = new ProcessEventArgs();
+            outputEventArgs.Reset();
+
             startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardOutput = true;
             using var process = Process.Start(startInfo);
@@ -16,11 +21,15 @@ namespace Threax.ProcessHelper
             {
                 process.ErrorDataReceived += (s, e) =>
                 {
-                    events.ErrorDataReceived?.Invoke(s, e);
+                    errorEventArgs.DataReceivedEventArgs = e;
+                    events.ErrorDataReceived?.Invoke(s, errorEventArgs);
+                    errorEventArgs.Reset();
                 };
                 process.OutputDataReceived += (s, e) =>
                 {
-                    events.OutputDataReceived?.Invoke(s, e);
+                    outputEventArgs.DataReceivedEventArgs = e;
+                    events.OutputDataReceived?.Invoke(s, outputEventArgs);
+                    outputEventArgs.Reset();
                 };
             }
             process.BeginErrorReadLine();

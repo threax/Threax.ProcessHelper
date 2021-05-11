@@ -25,21 +25,21 @@ namespace Threax.ProcessHelper
                 ProcessCompleted = events?.ProcessCompleted,
                 ErrorDataReceived = (s, e) =>
                 {
-                    if (!String.IsNullOrEmpty(e.Data))
-                    {
-                        logger.LogWarning(e.Data);
-                    }
-
                     events?.ErrorDataReceived?.Invoke(s, e);
+
+                    if (e.AllowOutput && !String.IsNullOrEmpty(e.DataReceivedEventArgs.Data))
+                    {
+                        logger.LogWarning(e.DataReceivedEventArgs.Data);
+                    }
                 },
                 OutputDataReceived = (s, e) =>
                 {
-                    if (!String.IsNullOrEmpty(e.Data))
-                    {
-                        logger.LogInformation(e.Data);
-                    }
-
                     events?.OutputDataReceived?.Invoke(s, e);
+
+                    if (e.AllowOutput && !String.IsNullOrEmpty(e.DataReceivedEventArgs.Data))
+                    {
+                        logger.LogInformation(e.DataReceivedEventArgs.Data);
+                    }
                 }
             });
         }

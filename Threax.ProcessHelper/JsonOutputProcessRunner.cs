@@ -43,23 +43,26 @@ namespace Threax.ProcessHelper
                 },
                 OutputDataReceived = (s, e) =>
                 {
-                    if (!String.IsNullOrEmpty(e.Data))
+                    if (!String.IsNullOrEmpty(e.DataReceivedEventArgs.Data))
                     {
-                        if (e.Data == JsonStart)
+                        if (e.DataReceivedEventArgs.Data == JsonStart)
                         {
                             readJsonLines = true;
+                            e.AllowOutput = false;
                         }
-                        else if (e.Data == JsonEnd)
+                        else if (e.DataReceivedEventArgs.Data == JsonEnd)
                         {
                             readJsonLines = false;
+                            e.AllowOutput = false;
                         }
                         else if (readJsonLines) //Else is intentional, want to skip start and end lines.
                         {
                             //Skip any lines that start with text in the skip lines collection
-                            if(!StartWithSkipLines.Any(i => e.Data.StartsWith(i)))
+                            if(!StartWithSkipLines.Any(i => e.DataReceivedEventArgs.Data.StartsWith(i)))
                             {
                                 HadJsonOutput = true;
-                                jsonBuilder.AppendLine(e.Data);
+                                jsonBuilder.AppendLine(e.DataReceivedEventArgs.Data);
+                                e.AllowOutput = false;
                             }
                         }
                     }
