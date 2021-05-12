@@ -9,8 +9,6 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        class DefaultPwshLog { }
-
         public static IServiceCollection AddThreaxPwshShellRunner(this IServiceCollection services, Action<ThreaxPwshProcessHelperOptions>? configure = null)
         {
             var options = new ThreaxPwshProcessHelperOptions();
