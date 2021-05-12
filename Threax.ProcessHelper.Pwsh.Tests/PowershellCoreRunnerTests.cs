@@ -323,5 +323,13 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             dynamic result = runner.RunProcess($"[PSCustomObject]@{{ Name = {name}; Value = {value}; }} | ConvertTo-Json -Depth 2");
             Assert.Equal("Test", (string)result.Name);
         }
+
+        [Fact]
+        public void GetExit()
+        {
+            var runner = mockup.Get<IShellRunner>();
+            var result = runner.RunProcessGetExit($"ping");
+            Assert.Equal(1, result);
+        }
     }
 }

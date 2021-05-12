@@ -27,6 +27,10 @@ namespace Threax.ProcessHelper
         Task RunProcessVoidAsync(FormattableString command, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.");
         Task RunProcessVoidAsync(IShellCommandBuilder builder, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.");
         IShellCommandBuilder CreateCommandBuilder();
+        int RunProcessGetExit(IEnumerable<FormattableString> command);
+        int RunProcessGetExit(FormattableString command);
+        Task<int> RunProcessGetExitAsync(IEnumerable<FormattableString> command);
+        Task<int> RunProcessGetExitAsync(FormattableString command);
     }
 
     public interface IShellRunner : IShellRunner<IShellRunner>

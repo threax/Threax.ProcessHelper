@@ -18,6 +18,18 @@ namespace Threax.ProcessHelper.Pwsh
             this.processRunnerFactory = processRunnerFactory;
         }
 
+        public int RunProcessGetExit(IEnumerable<FormattableString> command)
+        {
+            var escapedCommand = command.GetPwshEnvString(out var args);
+            return DoRunProcessGetExit(escapedCommand, args);
+        }
+
+        public int RunProcessGetExit(FormattableString command)
+        {
+            var escapedCommand = command.GetPwshEnvString(out var args);
+            return DoRunProcessGetExit(escapedCommand, args);
+        }
+
         public void RunProcessVoid(IEnumerable<FormattableString> command, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
         {
             var escapedCommand = command.GetPwshEnvString(out var args);
@@ -32,14 +44,20 @@ namespace Threax.ProcessHelper.Pwsh
 
         private void DoRunProcessVoid(String escapedCommand, IEnumerable<KeyValuePair<string, object?>> args, int validExitCode, string invalidExitCodeMessage)
         {
-            var runner = processRunnerFactory.Create();
-            var finalCommand = $"{escapedCommand};exit $LASTEXITCODE";
-            var startInfo = SetupArgs(finalCommand, args);
-            var exitCode = runner.Run(startInfo);
+            int exitCode = DoRunProcessGetExit(escapedCommand, args);
             if (exitCode != validExitCode)
             {
                 throw new InvalidOperationException($"Invalid exit code '{exitCode}' expected '{validExitCode}'. Message: '{invalidExitCodeMessage}'");
             }
+        }
+
+        private int DoRunProcessGetExit(string escapedCommand, IEnumerable<KeyValuePair<string, object?>> args)
+        {
+            var runner = processRunnerFactory.Create();
+            var finalCommand = $"{escapedCommand};exit $LASTEXITCODE";
+            var startInfo = SetupArgs(finalCommand, args);
+            var exitCode = runner.Run(startInfo);
+            return exitCode;
         }
 
         public TResult? RunProcess<TResult>(IEnumerable<FormattableString> command, int validExitCode = 0, String invalidExitCodeMessage = "Invalid exit code for process.")
@@ -136,6 +154,16 @@ namespace Threax.ProcessHelper.Pwsh
         {
             value = value.Replace("'", "''");
             return value;
+        }
+
+        public Task<int> RunProcessGetExitAsync(IEnumerable<FormattableString> command)
+        {
+            return RunFuncAsync<int>(() => RunProcessGetExit(command));
+        }
+
+        public Task<int> RunProcessGetExitAsync(FormattableString command)
+        {
+            return RunFuncAsync<int>(() => RunProcessGetExit(command));
         }
 
         public Task<JToken> RunProcessAsync(FormattableString command, int validExitCode = 0, string invalidExitCodeMessage = "Invalid exit code for process.")
