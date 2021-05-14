@@ -130,7 +130,7 @@ namespace Threax.ProcessHelper.Pwsh
             var jsonEnd = EscapePwshSingleQuote(runner.JsonEnd);
 
             var escapedCommand = builder.CreateFinalEscapedCommand(out var args);
-            var finalCommand = $"{escapedCommand};${builder.ResultVariableName} = ${builder.ResultVariableName} | ConvertTo-Json -Depth {builder.JsonDepth};'{jsonStart}';${builder.ResultVariableName};'{jsonEnd}'";
+            var finalCommand = $"{escapedCommand};'{jsonStart}';${builder.ResultVariableName};'{jsonEnd}'";
             var startInfo = SetupArgs(finalCommand, args);
             var exitCode = runner.Run(startInfo);
             if (exitCode != validExitCode)

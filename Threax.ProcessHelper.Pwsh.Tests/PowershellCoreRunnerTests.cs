@@ -46,7 +46,7 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             var builder = runner.CreateCommandBuilder();
             var evil = "echo hi";
             builder.AddCommand($"'Before'");
-            builder.AddResultCommand($"{evil}");
+            builder.AddResultCommand($"{evil} | ConvertTo-Json");
             builder.AddCommand($"'After'");
             var result = runner.RunProcess(builder);
             Assert.Equal("echo hi", result.ToString());
@@ -58,7 +58,7 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             var runner = mockup.Get<IShellRunner>();
             var builder = runner.CreateCommandBuilder();
             builder.AddCommand($"'Before'");
-            builder.AddResultCommand($"'Hi'");
+            builder.AddResultCommand($"'Hi' | ConvertTo-Json");
             builder.AddCommand($"'After'");
             var result = runner.RunProcess(builder);
             Assert.Equal("Hi", result.ToString());
@@ -71,7 +71,7 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             var builder = runner.CreateCommandBuilder();
             var info = "Hi";
             builder.AddCommand($"'Before'");
-            builder.AddResultCommand($"{info}");
+            builder.AddResultCommand($"{info} | ConvertTo-Json");
             builder.AddCommand($"'After'");
             var result = runner.RunProcess(builder);
             Assert.Equal("Hi", result.ToString());
@@ -84,7 +84,7 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             var builder = runner.CreateCommandBuilder();
             var evil = "echo hi";
             builder.AddCommand($"'Before'");
-            builder.AddResultCommand($"{evil}");
+            builder.AddResultCommand($"{evil} | ConvertTo-Json");
             builder.AddCommand($"'After'");
             var result = runner.RunProcess<String>(builder);
             Assert.Equal("echo hi", result);
@@ -97,7 +97,7 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             var builder = runner.CreateCommandBuilder();
             var evil = "echo hi";
             builder.AddCommand($"'Before'");
-            builder.AddResultCommand($"{new RawProcessString(evil)}");
+            builder.AddResultCommand($"{new RawProcessString(evil)} | ConvertTo-Json");
             builder.AddCommand($"'After'");
             var result = runner.RunProcess<String>(builder);
             Assert.NotEqual("echo hi", result);
@@ -110,7 +110,7 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             var runner = mockup.Get<IShellRunner>();
             var builder = runner.CreateCommandBuilder();
             builder.AddCommand($"'Before'");
-            builder.AddResultCommand($"'Hi'");
+            builder.AddResultCommand($"'Hi' | ConvertTo-Json");
             builder.AddCommand($"'After'");
             var result = runner.RunProcess<String>(builder);
             Assert.Equal("Hi", result);
@@ -123,7 +123,7 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             var builder = runner.CreateCommandBuilder();
             var info = "Hi";
             builder.AddCommand($"'Before'");
-            builder.AddResultCommand($"{info}");
+            builder.AddResultCommand($"{info} | ConvertTo-Json");
             builder.AddCommand($"'After'");
             var result = runner.RunProcess<String>(builder);
             Assert.Equal("Hi", result);
@@ -140,7 +140,7 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             builder.AddCommand($"{dummy}");
             builder.AddCommand($"{dummy}");
             builder.AddCommand($"{dummy}");
-            builder.AddResultCommand($"{info}");
+            builder.AddResultCommand($"{info} | ConvertTo-Json");
             builder.AddCommand($"'After'");
             var result = runner.RunProcess<String>(builder);
             Assert.Equal("Hi", result);
@@ -154,7 +154,7 @@ namespace Threax.ProcessHelper.Pwsh.Tests
             var info = "Hi";
             var dummy = "Dummy";
             builder.AddCommand($"'Before'");
-            builder.AddResultCommand($"{info}");
+            builder.AddResultCommand($"{info} | ConvertTo-Json");
             builder.AddCommand($"{dummy}");
             builder.AddCommand($"{dummy}");
             builder.AddCommand($"{dummy}");
@@ -173,8 +173,7 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         {
             var runner = mockup.Get<IShellRunner>();
             var builder = runner.CreateCommandBuilder();
-            builder.JsonDepth = 2; //This command benefits from a small json depth
-            builder.AddResultCommand($"Get-Host");
+            builder.AddResultCommand($"Get-Host | ConvertTo-Json -Depth 2");
             var result = runner.RunProcess<HostInfo>(builder);
             Assert.Equal("ConsoleHost", result.Name);
         }

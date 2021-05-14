@@ -10,11 +10,6 @@ namespace Threax.ProcessHelper
         /// </summary>
         string ResultVariableName { get; set; }
 
-        /// <summary>
-        /// The depth of json to convert if supported by the underlying shell. Default: 10
-        /// </summary>
-        int JsonDepth { get; set; }
-
         void AddCommand(FormattableString command);
         void AddCommand(IEnumerable<FormattableString> command);
 
