@@ -28,6 +28,12 @@ namespace Threax.ProcessHelper
             this.child = child;
         }
 
+        public JsonOutputProcessRunner(IProcessRunner child, bool readAllLinesAsJson)
+            :this(child)
+        {
+            this.ReadAllLinesAsJson = readAllLinesAsJson;
+        }
+
         public int Run(ProcessStartInfo startInfo, ProcessEvents? events = null)
         {
             jsonBuilder.Clear();
