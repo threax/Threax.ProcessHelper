@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace Threax.ProcessHelper.Pwsh
 {
-    public class PowershellCoreRunner<T> : IShellRunner<T>
+    public class PowershellCoreRunner : IPowershellCoreRunner
     {
-        private readonly IProcessRunnerFactory<T> processRunnerFactory;
+        private readonly IProcessRunner runner;
 
-        public PowershellCoreRunner(IProcessRunnerFactory<T> processRunnerFactory)
+        public PowershellCoreRunner(IProcessRunner runner)
         {
-            this.processRunnerFactory = processRunnerFactory;
+            this.runner = runner;
         }
 
         public int RunProcessGetExit(IEnumerable<FormattableString> command)
@@ -53,7 +53,6 @@ namespace Threax.ProcessHelper.Pwsh
 
         private int DoRunProcessGetExit(string escapedCommand, IEnumerable<KeyValuePair<string, object?>> args)
         {
-            var runner = processRunnerFactory.Create();
             var finalCommand = $"{escapedCommand};exit $LASTEXITCODE";
             var startInfo = SetupArgs(finalCommand, args);
             var exitCode = runner.Run(startInfo);
@@ -90,7 +89,7 @@ namespace Threax.ProcessHelper.Pwsh
 
         private JToken DoRunProcess(String escapedCommand, IEnumerable<KeyValuePair<string, object?>> args, String invalidExitCodeMessage, int validExitCode)
         {
-            var runner = new JsonOutputProcessRunner(processRunnerFactory.Create());
+            var runner = new JsonOutputProcessRunner(this.runner);
             var jsonStart = EscapePwshSingleQuote(runner.JsonStart);
             var jsonEnd = EscapePwshSingleQuote(runner.JsonEnd);
 
@@ -106,8 +105,6 @@ namespace Threax.ProcessHelper.Pwsh
 
         public void RunProcessVoid(IShellCommandBuilder builder, string invalidExitCodeMessage = "Invalid exit code for process.", int validExitCode = 0)
         {
-            var runner = processRunnerFactory.Create();
-
             var escapedCommand = builder.CreateFinalEscapedCommand(out var args);
             var startInfo = SetupArgs(escapedCommand, args);
             var exitCode = runner.Run(startInfo);
@@ -125,7 +122,7 @@ namespace Threax.ProcessHelper.Pwsh
 
         public JToken RunProcess(IShellCommandBuilder builder, string invalidExitCodeMessage = "Invalid exit code for process.", int validExitCode = 0)
         {
-            var runner = new JsonOutputProcessRunner(processRunnerFactory.Create());
+            var runner = new JsonOutputProcessRunner(this.runner);
             var jsonStart = EscapePwshSingleQuote(runner.JsonStart);
             var jsonEnd = EscapePwshSingleQuote(runner.JsonEnd);
 
@@ -254,13 +251,6 @@ namespace Threax.ProcessHelper.Pwsh
             });
 
             return task.Task;
-        }
-    }
-
-    public class PowershellCoreRunner : PowershellCoreRunner<IShellRunner>, IShellRunner
-    {
-        public PowershellCoreRunner(IProcessRunnerFactory processRunnerFactory) : base(processRunnerFactory)
-        {
         }
     }
 }

@@ -14,28 +14,16 @@ namespace Microsoft.Extensions.DependencyInjection
             var options = new ThreaxPwshProcessHelperOptions();
             configure?.Invoke(options);
 
-            services.TryAddScoped<IProcessRunnerFactory>(
-                s => new CustomProcessRunnerFactory(() => CreateRunner(s, options)));
+            services.TryAddScoped<IProcessRunner>(
+                s => CreateRunner(s, options));
 
-            services.TryAddScoped<IShellRunner, PowershellCoreRunner>();
-
-            return services;
-        }
-
-        public static IServiceCollection AddThreaxPwshShellRunner<T>(this IServiceCollection services, Action<ThreaxPwshProcessHelperOptions<T>>? configure = null)
-        {
-            var options = new ThreaxPwshProcessHelperOptions<T>();
-            configure?.Invoke(options);
-
-            services.TryAddScoped<IProcessRunnerFactory<T>>(
-                s => new CustomProcessRunnerFactory<T>(() => CreateRunner(s, options)));
-
-            services.TryAddScoped<IShellRunner<T>, PowershellCoreRunner<T>>();
+            services.AddScoped<IPowershellCoreRunner, PowershellCoreRunner>();
+            services.TryAddScoped<IShellRunner>(s => s.GetRequiredService<IPowershellCoreRunner>());
 
             return services;
         }
 
-        private static IProcessRunner CreateRunner<T>(IServiceProvider s, ThreaxPwshProcessHelperOptions<T> options)
+        private static IProcessRunner CreateRunner(IServiceProvider s, ThreaxPwshProcessHelperOptions options)
         {
             IProcessRunner runner = new ProcessRunner();
             if (options.IncludeLogOutput)

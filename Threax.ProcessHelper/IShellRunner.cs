@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Threax.ProcessHelper
 {
-    public interface IShellRunner<T>
+    public interface IShellRunner
     {
         JToken RunProcess(FormattableString command, string invalidExitCodeMessage = "Invalid exit code for process.", int validExitCode = 0);
         JToken RunProcess(IShellCommandBuilder builder, string invalidExitCodeMessage = "Invalid exit code for process.", int validExitCode = 0);
@@ -31,10 +31,5 @@ namespace Threax.ProcessHelper
         int RunProcessGetExit(FormattableString command);
         Task<int> RunProcessGetExitAsync(IEnumerable<FormattableString> command);
         Task<int> RunProcessGetExitAsync(FormattableString command);
-    }
-
-    public interface IShellRunner : IShellRunner<IShellRunner>
-    {
-
     }
 }

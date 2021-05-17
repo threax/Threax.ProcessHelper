@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Threax.ProcessHelper.Pwsh
 {
-    public class ThreaxPwshProcessHelperOptions<T>
+    public class ThreaxPwshProcessHelperOptions
     {
         /// <summary>
         /// Set this to true to have the log output written during commands. Default: true
@@ -16,10 +16,5 @@ namespace Threax.ProcessHelper.Pwsh
         /// Further decorate the process runner. Can be null to have no modifications.
         /// </summary>
         public Func<IProcessRunner, IProcessRunner>? DecorateProcessRunner { get; set; }
-    }
-
-    public class ThreaxPwshProcessHelperOptions : ThreaxPwshProcessHelperOptions<ThreaxPwshProcessHelperOptions>
-    {
-        
     }
 }
