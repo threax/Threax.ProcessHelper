@@ -14,6 +14,7 @@ namespace Threax.ProcessHelper
             var outputEventArgs = new ProcessEventArgs();
             outputEventArgs.Reset();
 
+            startInfo.UseShellExecute = false;
             startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardOutput = true;
             using var process = Process.Start(startInfo);
