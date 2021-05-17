@@ -32,7 +32,7 @@ namespace Threax.ProcessHelper
         {
             jsonBuilder.Clear();
             HadJsonOutput = false;
-            bool readJsonLines = false;
+            bool readJsonLines = ReadAllLinesAsJson;
             LastExitCode = child.Run(startInfo, new ProcessEvents()
             {
                 ProcessCreated = events?.ProcessCreated,
@@ -108,6 +108,11 @@ namespace Threax.ProcessHelper
         /// This will be true if there was any json output.
         /// </summary>
         public bool HadJsonOutput { get; private set; }
+
+        /// <summary>
+        /// Set this to true to read all lines as json.
+        /// </summary>
+        public bool ReadAllLinesAsJson { get; set; }
 
         /// <summary>
         /// The last exit code produced by this runner.
