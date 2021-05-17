@@ -111,6 +111,30 @@ namespace Threax.ProcessHelper
         }
 
         /// <summary>
+        /// Parse the json result into T. Note that the returned T can be null.
+        /// </summary>
+        /// <typeparam name="T">The type to parse from the results.</typeparam>
+        /// <returns>A T, which can be null.</returns>
+        public T? GetResult<T>(String errorMessage, int validExitCode = 0)
+        {
+            return GetResult(errorMessage, validExitCode).ToObject<T>();
+        }
+
+        /// <summary>
+        /// Get the result as a JToken. You will always get a JToken, but it might represent null.
+        /// </summary>
+        /// <returns>A JToken of the parsed returned json.</returns>
+        public JToken GetResult(String errorMessage, int validExitCode = 0)
+        {
+            if(LastExitCode != validExitCode)
+            {
+                throw new InvalidOperationException($"Invalid exit code: '{LastExitCode}' expected '{validExitCode}'. Message: {errorMessage}");
+            }
+
+            return GetResult();
+        }
+
+        /// <summary>
         /// This will be true if there was any json output.
         /// </summary>
         public bool HadJsonOutput { get; private set; }
