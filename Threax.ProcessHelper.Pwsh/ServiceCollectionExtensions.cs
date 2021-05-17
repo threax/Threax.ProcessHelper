@@ -14,36 +14,10 @@ namespace Microsoft.Extensions.DependencyInjection
             var options = new ThreaxPwshProcessHelperOptions();
             configure?.Invoke(options);
 
-            services.TryAddScoped<IProcessRunner>(
-                s => CreateRunner(s, options));
-
             services.AddScoped<IPowershellCoreRunner, PowershellCoreRunner>();
             services.TryAddScoped<IShellRunner>(s => s.GetRequiredService<IPowershellCoreRunner>());
 
             return services;
-        }
-
-        private static IProcessRunner CreateRunner(IServiceProvider s, ThreaxPwshProcessHelperOptions options)
-        {
-            IProcessRunner runner = new ProcessRunner();
-            if (options.IncludeLogOutput)
-            {
-                try
-                {
-                    var logger = s.GetRequiredService<ILogger<DefaultPwshLog>>();
-                    runner = new LoggingProcessRunner<DefaultPwshLog>(runner, logger);
-                }
-                catch (ObjectDisposedException)
-                {
-                    //Sometimes this is called after the context is disposed.
-                    //If that happens it is ok, logging will not be included.
-                }
-            }
-            if (options.DecorateProcessRunner != null)
-            {
-                runner = options.DecorateProcessRunner.Invoke(runner);
-            }
-            return runner;
         }
     }
 }

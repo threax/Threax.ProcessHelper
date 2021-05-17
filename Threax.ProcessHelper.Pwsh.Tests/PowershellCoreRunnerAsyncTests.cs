@@ -14,6 +14,7 @@ namespace Threax.ProcessHelper.Pwsh.Tests
         public PowershellCoreRunnerAsyncTests()
         {
             mockup.MockServiceCollection.AddLogging();
+            mockup.MockServiceCollection.AddThreaxProcessHelper();
             mockup.MockServiceCollection.AddThreaxPwshShellRunner();
         }
 

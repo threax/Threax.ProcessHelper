@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Threax.ProcessHelper.Pwsh
+namespace Threax.ProcessHelper
 {
-    class DefaultPwshLog
+    class DefaultLog
     {
     }
 }
