@@ -84,7 +84,7 @@ namespace Threax.ProcessHelper.Pwsh
 
             private String GetEnvArg(int index)
             {
-                return $"$env:{GetName(index)}";
+                return $"${{env:{GetName(index)}}}";
             }
 
             private String GetName(int index)
