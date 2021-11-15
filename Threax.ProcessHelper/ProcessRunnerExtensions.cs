@@ -8,6 +8,23 @@ namespace Threax.ProcessHelper
 {
     public static class ProcessRunnerExtensions
     {
+
+        public static void RunVoid(this IProcessRunner processRunner, ProcessStartInfo startInfo, String errorMessage, int validExitCode = 0)
+        {
+            RunVoid(processRunner, startInfo, r => r != validExitCode ? errorMessage : null);
+        }
+
+        public static void RunVoid(this IProcessRunner processRunner, ProcessStartInfo startInfo, Func<int, string?> handleExitCode)
+        {
+            var exit = processRunner.Run(startInfo);
+
+            var error = handleExitCode(exit);
+            if (error != null)
+            {
+                throw new InvalidOperationException($"{error}. Got exit code '{exit}'.");
+            }
+        }
+
         public static JToken RunJsonProcess(this IProcessRunner processRunner, ProcessStartInfo startInfo, String errorMessage, int validExitCode = 0)
         {
             return RunJsonProcess(processRunner, startInfo, r => r != validExitCode ? errorMessage : null);
