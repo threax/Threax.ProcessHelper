@@ -24,12 +24,12 @@ namespace Threax.ProcessHelper
             }
         }
 
-        public static JsonNode RunJsonProcess(this IProcessRunner processRunner, ProcessStartInfo startInfo, String errorMessage, int validExitCode = 0)
+        public static JsonNode? RunJsonProcess(this IProcessRunner processRunner, ProcessStartInfo startInfo, String errorMessage, int validExitCode = 0)
         {
             return RunJsonProcess(processRunner, startInfo, r => r != validExitCode ? errorMessage : null);
         }
 
-        public static JsonNode RunJsonProcess(this IProcessRunner processRunner, ProcessStartInfo startInfo, Func<int, string?> handleExitCode)
+        public static JsonNode? RunJsonProcess(this IProcessRunner processRunner, ProcessStartInfo startInfo, Func<int, string?> handleExitCode)
         {
             var jsonRunner = new JsonOutputProcessRunner(processRunner, true);
             jsonRunner.Run(startInfo);

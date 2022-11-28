@@ -18,6 +18,10 @@ namespace Threax.ProcessHelper
             startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardOutput = true;
             using var process = Process.Start(startInfo);
+            if(process == null)
+            {
+                throw new InvalidOperationException($"Could not start process '{startInfo.FileName}'.");
+            }
             if (events != null)
             {
                 process.ErrorDataReceived += (s, e) =>
