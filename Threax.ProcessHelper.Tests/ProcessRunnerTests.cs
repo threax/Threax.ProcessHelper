@@ -46,7 +46,7 @@ namespace Threax.ProcessHelper.Tests
             var jsonObj = new { hello = "hi" };
             var startInfo = new ProcessStartInfo("pwsh") { ArgumentList = { "-c", $"'{JsonSerializer.Serialize(jsonObj)}'" } };
             var result = processRunner.RunJsonProcess(startInfo, "could not parse json result");
-            Assert.Equal("hi", result["hello"]);
+            Assert.Equal("hi", result["hello"].ToString());
         }
 
         [Fact]

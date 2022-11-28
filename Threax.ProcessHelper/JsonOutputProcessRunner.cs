@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Threax.ProcessHelper
 {
@@ -87,24 +88,35 @@ namespace Threax.ProcessHelper
         /// <returns>A T, which can be null.</returns>
         public T? GetResult<T>()
         {
-            return GetResult().ToObject<T>();
-        }
-
-        /// <summary>
-        /// Get the result as a JToken. You will always get a JToken, but it might represent null.
-        /// </summary>
-        /// <returns>A JToken of the parsed returned json.</returns>
-        public JToken GetResult()
-        {
-            JToken result;
+            T? result;
             if (HadJsonOutput)
             {
                 var json = jsonBuilder.ToString();
-                result = JToken.Parse(json); 
+                result = JsonSerializer.Deserialize<T>(json);
             }
             else
             {
-                result = JToken.Parse("null");
+                result = default(T);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get the result as a JsonNode. This will be null if the result was null.
+        /// </summary>
+        /// <returns>A JsonNode of the parsed returned json.</returns>
+        public JsonNode? GetResult()
+        {
+            JsonNode? result;
+            if (HadJsonOutput)
+            {
+                var json = jsonBuilder.ToString();
+                result = JsonNode.Parse(json);
+            }
+            else
+            {
+                result = null;
             }
 
             return result;
@@ -117,14 +129,19 @@ namespace Threax.ProcessHelper
         /// <returns>A T, which can be null.</returns>
         public T? GetResult<T>(String errorMessage, int validExitCode = 0)
         {
-            return GetResult(errorMessage, validExitCode).ToObject<T>();
+            if (LastExitCode != validExitCode)
+            {
+                throw new InvalidOperationException($"Invalid exit code: '{LastExitCode}' expected '{validExitCode}'. Message: {errorMessage}");
+            }
+
+            return GetResult<T>();
         }
 
         /// <summary>
-        /// Get the result as a JToken. You will always get a JToken, but it might represent null.
+        /// Get the result as a JsonNode. This will be null if the result was null.
         /// </summary>
-        /// <returns>A JToken of the parsed returned json.</returns>
-        public JToken GetResult(String errorMessage, int validExitCode = 0)
+        /// <returns>A JsonNode of the parsed returned json.</returns>
+        public JsonNode? GetResult(String errorMessage, int validExitCode = 0)
         {
             if(LastExitCode != validExitCode)
             {
