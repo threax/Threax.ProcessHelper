@@ -16,8 +16,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Threax.ProcessHelper.Pwsh\Threax.ProcessHelper.Pwsh.csproj" />
-  </ItemGroup>
-
 </Project>
