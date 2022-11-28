@@ -92,7 +92,11 @@ namespace Threax.ProcessHelper
             if (HadJsonOutput)
             {
                 var json = jsonBuilder.ToString();
-                result = JsonSerializer.Deserialize<T>(json);
+                result = JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions()
+                {
+                    AllowTrailingCommas = true,
+                    PropertyNameCaseInsensitive = true
+                });
             }
             else
             {
