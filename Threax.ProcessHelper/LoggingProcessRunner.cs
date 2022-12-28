@@ -1,12 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace Threax.ProcessHelper
 {
-    public class LoggingProcessRunner<TLog> : IProcessRunner
+    public class LoggingProcessRunner<TLog> : IProcessRunner<TLog>
     {
         private readonly IProcessRunner child;
         private readonly ILogger<TLog> logger;
