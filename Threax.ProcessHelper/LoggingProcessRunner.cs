@@ -4,12 +4,12 @@ using System.Diagnostics;
 
 namespace Threax.ProcessHelper
 {
-    public class LoggingProcessRunner<TLog> : IProcessRunner<TLog>
+    public class LoggingProcessRunner : IProcessRunner
     {
         private readonly IProcessRunner child;
-        private readonly ILogger<TLog> logger;
+        private readonly ILogger logger;
 
-        public LoggingProcessRunner(IProcessRunner child, ILogger<TLog> logger)
+        public LoggingProcessRunner(IProcessRunner child, ILogger logger)
         {
             this.child = child;
             this.logger = logger;

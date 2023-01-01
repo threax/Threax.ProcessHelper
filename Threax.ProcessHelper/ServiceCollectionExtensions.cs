@@ -16,12 +16,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 IProcessRunner runner = new ProcessRunner();
                 if (options.DecorateProcessRunner != null)
                 {
-                    runner = options.DecorateProcessRunner.Invoke(runner);
+                    runner = options.DecorateProcessRunner.Invoke(s, runner);
                 }
                 return runner;
             });
-
-            services.TryAddScoped(typeof(IProcessRunner<>), typeof(LoggingProcessRunner<>));
 
             return services;
         }

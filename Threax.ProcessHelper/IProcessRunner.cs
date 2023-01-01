@@ -13,13 +13,4 @@ namespace Threax.ProcessHelper
         /// <returns></returns>
         int Run(ProcessStartInfo startInfo, ProcessEvents? events = null);
     }
-
-    /// <summary>
-    /// A process runner that includes logged output scoped to the given type.
-    /// </summary>
-    /// <typeparam name="TLog"></typeparam>
-    public interface IProcessRunner<TLog> : IProcessRunner
-    {
-
-    }
 }

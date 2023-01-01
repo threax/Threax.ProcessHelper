@@ -20,7 +20,7 @@ namespace Threax.ProcessHelper.Tests
         [Fact]
         public void Echo()
         {
-            var processRunner = new LoggingProcessRunner<LoggingProcessRunnerTests>(new ProcessRunner(), mockup.Get<ILogger<LoggingProcessRunnerTests>>());
+            var processRunner = new LoggingProcessRunner(new ProcessRunner(), mockup.Get<ILogger<LoggingProcessRunnerTests>>());
             var startInfo = new ProcessStartInfo("pwsh", "-c 'hi'");
             var result = processRunner.Run(startInfo);
             Assert.Equal(0, result);
@@ -29,7 +29,7 @@ namespace Threax.ProcessHelper.Tests
         [Fact]
         public void EchoError()
         {
-            var processRunner = new LoggingProcessRunner<LoggingProcessRunnerTests>(new ProcessRunner(), mockup.Get<ILogger<LoggingProcessRunnerTests>>());
+            var processRunner = new LoggingProcessRunner(new ProcessRunner(), mockup.Get<ILogger<LoggingProcessRunnerTests>>());
             var startInfo = new ProcessStartInfo("pwsh", "-c Write-Error 'hi'");
             var result = processRunner.Run(startInfo);
             Assert.Equal(1, result);
@@ -38,7 +38,7 @@ namespace Threax.ProcessHelper.Tests
         [Fact]
         public void Fail()
         {
-            var processRunner = new LoggingProcessRunner<LoggingProcessRunnerTests>(new ProcessRunner(), mockup.Get<ILogger<LoggingProcessRunnerTests>>());
+            var processRunner = new LoggingProcessRunner(new ProcessRunner(), mockup.Get<ILogger<LoggingProcessRunnerTests>>());
             var startInfo = new ProcessStartInfo("pwsh", "asdfasdfdsa");
             var result = processRunner.Run(startInfo);
             Assert.Equal(64, result);
