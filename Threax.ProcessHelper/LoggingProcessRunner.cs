@@ -2,44 +2,43 @@
 using System;
 using System.Diagnostics;
 
-namespace Threax.ProcessHelper
+namespace Threax.ProcessHelper;
+
+public class LoggingProcessRunner : IProcessRunner
 {
-    public class LoggingProcessRunner : IProcessRunner
+    private readonly IProcessRunner child;
+    private readonly ILogger logger;
+
+    public LoggingProcessRunner(IProcessRunner child, ILogger logger)
     {
-        private readonly IProcessRunner child;
-        private readonly ILogger logger;
+        this.child = child;
+        this.logger = logger;
+    }
 
-        public LoggingProcessRunner(IProcessRunner child, ILogger logger)
+    public int Run(ProcessStartInfo startInfo, ProcessEvents? events = null)
+    {
+        return child.Run(startInfo, new ProcessEvents()
         {
-            this.child = child;
-            this.logger = logger;
-        }
-
-        public int Run(ProcessStartInfo startInfo, ProcessEvents? events = null)
-        {
-            return child.Run(startInfo, new ProcessEvents()
+            ProcessCreated = events?.ProcessCreated,
+            ProcessCompleted = events?.ProcessCompleted,
+            ErrorDataReceived = (s, e) =>
             {
-                ProcessCreated = events?.ProcessCreated,
-                ProcessCompleted = events?.ProcessCompleted,
-                ErrorDataReceived = (s, e) =>
-                {
-                    events?.ErrorDataReceived?.Invoke(s, e);
+                events?.ErrorDataReceived?.Invoke(s, e);
 
-                    if (e.AllowOutput && !String.IsNullOrEmpty(e.DataReceivedEventArgs.Data))
-                    {
-                        logger.LogWarning(e.DataReceivedEventArgs.Data);
-                    }
-                },
-                OutputDataReceived = (s, e) =>
+                if (e.AllowOutput && !String.IsNullOrEmpty(e.DataReceivedEventArgs.Data))
                 {
-                    events?.OutputDataReceived?.Invoke(s, e);
-
-                    if (e.AllowOutput && !String.IsNullOrEmpty(e.DataReceivedEventArgs.Data))
-                    {
-                        logger.LogInformation(e.DataReceivedEventArgs.Data);
-                    }
+                    logger.LogWarning(e.DataReceivedEventArgs.Data);
                 }
-            });
-        }
+            },
+            OutputDataReceived = (s, e) =>
+            {
+                events?.OutputDataReceived?.Invoke(s, e);
+
+                if (e.AllowOutput && !String.IsNullOrEmpty(e.DataReceivedEventArgs.Data))
+                {
+                    logger.LogInformation(e.DataReceivedEventArgs.Data);
+                }
+            }
+        });
     }
 }
